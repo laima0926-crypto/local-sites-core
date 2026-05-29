@@ -45,6 +45,25 @@ export interface Faq {
   answer: string; // always the customer's own words — never invented
 }
 
+export interface MenuItem {
+  name: string;
+  description?: string;
+  price: string;
+  tags?: string[]; // dietary, e.g. "V" (veg), "VG" (vegan), "GF" (gluten-free)
+  allergens?: string; // free text, e.g. "Contains nuts, dairy"
+}
+
+export interface MenuSection {
+  name: string; // e.g. "Starters", "Pizza", "Desserts"
+  description?: string;
+  items: MenuItem[];
+}
+
+export interface DeliveryLink {
+  name: string; // e.g. "Just Eat", "Uber Eats", "Deliveroo"
+  url: string;
+}
+
 export interface SiteConfig {
   businessType: BusinessType;
   business: {
@@ -98,4 +117,11 @@ export interface SiteConfig {
     warranty?: string;
     diagnosticFee?: string;
   };
+
+  // Restaurant
+  cuisine?: string; // e.g. "Italian", "Modern British"
+  reservationUrl?: string; // external booking link; falls back to /contact when unset
+  menuNote?: string; // shown above the menu, e.g. allergen / dietary note
+  menu?: MenuSection[];
+  delivery?: DeliveryLink[];
 }

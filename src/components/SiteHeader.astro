@@ -5,13 +5,18 @@ interface Props {
 }
 const { site } = Astro.props;
 
+const isRestaurant = site.businessType === 'restaurant';
+
 const nav = [
   { href: '/', label: 'Home' },
-  { href: '/services', label: 'Services' },
+  isRestaurant ? { href: '/menu', label: 'Menu' } : { href: '/services', label: 'Services' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
+
+const ctaLabel = isRestaurant ? 'Book a table' : 'Get a free quote';
+const ctaHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
@@ -39,10 +44,10 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 
     <div class="flex items-center gap-2">
       <a
-        href="/contact"
+        href={ctaHref}
         class="hidden sm:inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold px-5 py-2.5 shadow-sm transition-colors"
       >
-        Get a free quote
+        {ctaLabel}
       </a>
       <a
         href={`tel:${site.contact.phone}`}

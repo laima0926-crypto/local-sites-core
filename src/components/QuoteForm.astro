@@ -4,12 +4,21 @@ interface Props {
   site: SiteConfig;
 }
 const { site } = Astro.props;
+const isRestaurant = site.businessType === 'restaurant';
+const formHeading = isRestaurant ? 'Send us a message' : 'Get a free quote';
+const formSubtitle = isRestaurant
+  ? 'Booking enquiries, private events, or any questions — we usually reply the same day.'
+  : 'Tell us about the job. We usually reply within a few working hours.';
+const messageLabel = isRestaurant ? 'Your message' : 'Tell us about the job';
+const messagePlaceholder = isRestaurant
+  ? 'Party size, date & time, dietary requirements, or anything else…'
+  : 'Size of property, rooms involved, preferred dates, anything we should know…';
 ---
 
 <form id="quote-form" class="bg-ink-50 rounded-2xl p-6 md:p-8 space-y-4" novalidate>
   <div>
-    <h2 class="font-display text-2xl font-bold text-ink-900">Get a free quote</h2>
-    <p class="mt-1 text-sm text-ink-600">Tell us about the job. We usually reply within a few working hours.</p>
+    <h2 class="font-display text-2xl font-bold text-ink-900">{formHeading}</h2>
+    <p class="mt-1 text-sm text-ink-600">{formSubtitle}</p>
   </div>
 
   <input type="text" name="botcheck" class="absolute opacity-0 pointer-events-none" tabindex="-1" autocomplete="off" aria-hidden="true" style="left:-9999px" />
@@ -30,25 +39,29 @@ const { site } = Astro.props;
     <input id="qf-email" name="email" type="email" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
   </div>
 
-  <div>
-    <label for="qf-service" class="block text-sm font-semibold text-ink-800 mb-1.5">Service needed</label>
-    <select id="qf-service" name="service" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors bg-white">
-      <option value="">Choose a service…</option>
-      {site.services.map((s) => (
-        <option value={s.name}>{s.name}</option>
-      ))}
-      <option value="not-sure">Not sure — please advise</option>
-    </select>
-  </div>
+  {site.services.length > 0 && (
+    <div>
+      <label for="qf-service" class="block text-sm font-semibold text-ink-800 mb-1.5">Service needed</label>
+      <select id="qf-service" name="service" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors bg-white">
+        <option value="">Choose a service…</option>
+        {site.services.map((s) => (
+          <option value={s.name}>{s.name}</option>
+        ))}
+        <option value="not-sure">Not sure — please advise</option>
+      </select>
+    </div>
+  )}
+
+  {!isRestaurant && (
+    <div>
+      <label for="qf-postcode" class="block text-sm font-semibold text-ink-800 mb-1.5">Postcode</label>
+      <input id="qf-postcode" name="postcode" type="text" placeholder="e.g. WS13 6AB" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+    </div>
+  )}
 
   <div>
-    <label for="qf-postcode" class="block text-sm font-semibold text-ink-800 mb-1.5">Postcode</label>
-    <input id="qf-postcode" name="postcode" type="text" placeholder="e.g. WS13 6AB" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
-  </div>
-
-  <div>
-    <label for="qf-message" class="block text-sm font-semibold text-ink-800 mb-1.5">Tell us about the job <span class="text-red-600">*</span></label>
-    <textarea id="qf-message" name="message" rows="5" required placeholder="Size of property, rooms involved, preferred dates, anything we should know…" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors resize-none"></textarea>
+    <label for="qf-message" class="block text-sm font-semibold text-ink-800 mb-1.5">{messageLabel} <span class="text-red-600">*</span></label>
+    <textarea id="qf-message" name="message" rows="5" required placeholder={messagePlaceholder} class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors resize-none"></textarea>
   </div>
 
   <p class="text-xs text-ink-500">

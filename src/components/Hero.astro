@@ -6,16 +6,27 @@ interface Props {
 const { site } = Astro.props;
 
 const a = site.attestations;
+const isRestaurant = site.businessType === 'restaurant';
 const yearsTrading = site.business.yearEstablished
   ? new Date().getFullYear() - site.business.yearEstablished
   : 0;
 
 const badges: string[] = [];
+if (isRestaurant && site.cuisine) badges.push(site.cuisine);
 if (a.insured) badges.push('Insured');
 if (a.dbsChecked) badges.push('DBS-checked');
 if (a.ecoProducts) badges.push('Eco-friendly products');
 if (yearsTrading >= 2 && !site.contact.nationwide) badges.push(`${yearsTrading}+ years in ${site.contact.serviceAreas[0]}`);
 else if (yearsTrading >= 2) badges.push(`${yearsTrading}+ years`);
+
+// Primary action + supporting copy differ for restaurants (book/menu vs quote/services).
+const primaryLabel = isRestaurant ? 'Book a table' : 'Get a free quote';
+const primaryHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
+const browseHref = isRestaurant ? '/menu' : '/services';
+const browseLabel = isRestaurant ? 'full menu' : 'full services & prices';
+const cardIcon = isRestaurant ? '🍽️' : '⏱️';
+const cardTitle = isRestaurant ? 'Book a table' : 'Quick quotes';
+const cardSubtitle = isRestaurant ? 'Bookings & walk-ins welcome' : 'Reply within a few working hours';
 
 const headline = site.business.heroHeadline || site.business.tagline;
 const heroImage = site.business.heroImage || 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&h=750&fit=crop';
@@ -52,10 +63,10 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
         <a
-          href="/contact"
+          href={primaryHref}
           class="inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md hover:shadow-lg transition-all"
         >
-          Get a free quote
+          {primaryLabel}
           <span aria-hidden="true">→</span>
         </a>
         <a
@@ -67,7 +78,7 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
       </div>
 
       <p class="mt-6 text-sm text-ink-600">
-        Or browse our <a href="/services" class="text-brand-700 font-medium hover:underline">full services &amp; prices →</a>
+        Or browse our <a href={browseHref} class="text-brand-700 font-medium hover:underline">{browseLabel} →</a>
       </p>
     </div>
 
@@ -77,11 +88,11 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
         <div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur rounded-2xl p-4 shadow-lg">
           <div class="flex items-center gap-3">
             <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-2xl">
-              ⏱️
+              {cardIcon}
             </div>
             <div>
-              <div class="font-display font-bold text-ink-900 text-sm">Quick quotes</div>
-              <div class="text-xs text-ink-600">Reply within a few working hours</div>
+              <div class="font-display font-bold text-ink-900 text-sm">{cardTitle}</div>
+              <div class="text-xs text-ink-600">{cardSubtitle}</div>
             </div>
           </div>
         </div>

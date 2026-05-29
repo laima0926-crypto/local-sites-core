@@ -47,6 +47,12 @@ const localBusiness = {
         sameAs: [site.socials.facebook, site.socials.instagram, site.socials.googleBusinessProfile].filter(Boolean),
       }
     : {}),
+  ...(site.businessType === 'restaurant'
+    ? {
+        ...(site.cuisine ? { servesCuisine: site.cuisine } : {}),
+        ...(site.reservationUrl ? { acceptsReservations: site.reservationUrl } : {}),
+      }
+    : {}),
 };
 ---
 

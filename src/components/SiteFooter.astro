@@ -5,6 +5,7 @@ interface Props {
 }
 const { site } = Astro.props;
 const year = new Date().getFullYear();
+const isRestaurant = site.businessType === 'restaurant';
 ---
 
 <footer class="bg-ink-900 text-ink-400 border-t border-ink-800">
@@ -29,7 +30,9 @@ const year = new Date().getFullYear();
         <h4 class="font-display font-semibold text-white mb-3">Site</h4>
         <ul class="space-y-2 text-sm">
           <li><a href="/" class="hover:text-white transition-colors">Home</a></li>
-          <li><a href="/services" class="hover:text-white transition-colors">Services</a></li>
+          {isRestaurant
+            ? <li><a href="/menu" class="hover:text-white transition-colors">Menu</a></li>
+            : <li><a href="/services" class="hover:text-white transition-colors">Services</a></li>}
           <li><a href="/gallery" class="hover:text-white transition-colors">Gallery</a></li>
           <li><a href="/about" class="hover:text-white transition-colors">About</a></li>
           <li><a href="/contact" class="hover:text-white transition-colors">Contact</a></li>
