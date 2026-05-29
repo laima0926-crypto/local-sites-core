@@ -8,8 +8,9 @@
 export type BusinessType = 'cleaning' | 'gardener' | 'pet' | 'restaurant' | 'repair' | 'trades';
 
 export interface Service {
+  slug?: string;
   name: string;
-  description: string;
+  shortDescription: string;
   price: string; // e.g. "from £18 per hour", "from £120", "POA"
   icon?: string;
   whoFor?: string;
