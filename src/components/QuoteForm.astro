@@ -1,0 +1,114 @@
+---
+import type { SiteConfig } from '../schema';
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+---
+
+<form id="quote-form" class="bg-ink-50 rounded-2xl p-6 md:p-8 space-y-4" novalidate>
+  <div>
+    <h2 class="font-display text-2xl font-bold text-ink-900">Get a free quote</h2>
+    <p class="mt-1 text-sm text-ink-600">Tell us about the job. We usually reply within a few working hours.</p>
+  </div>
+
+  <input type="text" name="botcheck" class="absolute opacity-0 pointer-events-none" tabindex="-1" autocomplete="off" aria-hidden="true" style="left:-9999px" />
+
+  <div class="grid sm:grid-cols-2 gap-4">
+    <div>
+      <label for="qf-name" class="block text-sm font-semibold text-ink-800 mb-1.5">Your name <span class="text-red-600">*</span></label>
+      <input id="qf-name" name="name" type="text" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+    </div>
+    <div>
+      <label for="qf-phone" class="block text-sm font-semibold text-ink-800 mb-1.5">Phone <span class="text-red-600">*</span></label>
+      <input id="qf-phone" name="phone" type="tel" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+    </div>
+  </div>
+
+  <div>
+    <label for="qf-email" class="block text-sm font-semibold text-ink-800 mb-1.5">Email <span class="text-red-600">*</span></label>
+    <input id="qf-email" name="email" type="email" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+  </div>
+
+  <div>
+    <label for="qf-service" class="block text-sm font-semibold text-ink-800 mb-1.5">Service needed</label>
+    <select id="qf-service" name="service" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors bg-white">
+      <option value="">Choose a service…</option>
+      {site.services.map((s) => (
+        <option value={s.name}>{s.name}</option>
+      ))}
+      <option value="not-sure">Not sure — please advise</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="qf-postcode" class="block text-sm font-semibold text-ink-800 mb-1.5">Postcode</label>
+    <input id="qf-postcode" name="postcode" type="text" placeholder="e.g. WS13 6AB" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+  </div>
+
+  <div>
+    <label for="qf-message" class="block text-sm font-semibold text-ink-800 mb-1.5">Tell us about the job <span class="text-red-600">*</span></label>
+    <textarea id="qf-message" name="message" rows="5" required placeholder="Size of property, rooms involved, preferred dates, anything we should know…" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors resize-none"></textarea>
+  </div>
+
+  <p class="text-xs text-ink-500">
+    By sending, you agree we may contact you about your enquiry. We don't share your details with anyone.
+  </p>
+
+  <div id="qf-error" class="hidden rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3"></div>
+  <div id="qf-success" class="hidden rounded-lg bg-brand-50 border border-brand-200 text-brand-900 text-sm px-4 py-3">
+    Thanks! We've got your enquiry. We'll be in touch within a few working hours.
+  </div>
+
+  <button id="qf-submit" type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors">
+    Send my enquiry
+    <span aria-hidden="true">→</span>
+  </button>
+</form>
+
+<script>
+  const form = document.getElementById('quote-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('qf-submit') as HTMLButtonElement;
+  const errorBox = document.getElementById('qf-error') as HTMLDivElement;
+  const successBox = document.getElementById('qf-success') as HTMLDivElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.classList.add('hidden');
+    successBox.classList.add('hidden');
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    // Honeypot — spam bots fill hidden fields
+    if (data.botcheck) {
+      successBox.classList.remove('hidden');
+      form.reset();
+      return;
+    }
+
+    if (!data.name || !data.email || !data.phone || !data.message) {
+      errorBox.textContent = 'Please fill in all required fields.';
+      errorBox.classList.remove('hidden');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    try {
+      // In a live deployment this posts to a Cloudflare Pages Function or form service (e.g. Web3Forms).
+      // For the demo, simulate a successful send.
+      await new Promise((r) => setTimeout(r, 600));
+
+      successBox.classList.remove('hidden');
+      form.reset();
+      successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+      errorBox.textContent = "Couldn't send right now. Please call or email us instead — details on the right.";
+      errorBox.classList.remove('hidden');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Send my enquiry <span aria-hidden="true">→</span>';
+    }
+  });
+</script>

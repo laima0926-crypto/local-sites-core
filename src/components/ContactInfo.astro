@@ -1,0 +1,65 @@
+---
+import type { SiteConfig } from '../schema';
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+const waNumber = site.contact.whatsapp?.replace(/\D/g, '');
+---
+
+<aside class="space-y-5">
+  <div class="rounded-2xl bg-brand-50 p-6 border border-brand-100">
+    <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
+      <span aria-hidden="true">📞</span> Call us
+    </h3>
+    <a href={`tel:${site.contact.phone}`} class="block text-2xl font-display font-extrabold text-brand-700 hover:underline">
+      {site.contact.phoneDisplay}
+    </a>
+    <p class="mt-2 text-sm text-ink-600">Usually answered within a few rings during working hours.</p>
+  </div>
+
+  {site.contact.whatsapp && waNumber && (
+    <div class="rounded-2xl bg-white p-6 border border-ink-100">
+      <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
+        <span aria-hidden="true">💬</span> WhatsApp
+      </h3>
+      <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-[#25D366] hover:bg-[#1ebd58] text-white text-sm font-semibold px-5 py-2.5">
+        Message us on WhatsApp
+      </a>
+    </div>
+  )}
+
+  <div class="rounded-2xl bg-white p-6 border border-ink-100">
+    <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
+      <span aria-hidden="true">✉️</span> Email
+    </h3>
+    <a href={`mailto:${site.contact.email}`} class="text-brand-700 font-medium hover:underline break-all">
+      {site.contact.email}
+    </a>
+  </div>
+
+  <div class="rounded-2xl bg-white p-6 border border-ink-100">
+    <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
+      <span aria-hidden="true">🕒</span> Opening hours
+    </h3>
+    <ul class="space-y-2 text-sm">
+      {site.hours.map((row) => (
+        <li class="flex justify-between text-ink-700">
+          <span>{row.day}</span>
+          <span class="font-medium text-ink-900">{row.hours}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+
+  <div class="rounded-2xl bg-white p-6 border border-ink-100">
+    <h3 class="font-display font-bold text-ink-900 mb-2 flex items-center gap-2">
+      <span aria-hidden="true">📍</span> Where we work
+    </h3>
+    <p class="text-sm text-ink-700 leading-relaxed">
+      {site.contact.nationwide
+        ? 'Covering all of the UK. Get in touch wherever you are.'
+        : `Based in ${site.contact.addressLines.join(', ')}. Covering ${site.contact.serviceAreas.slice(0, 3).join(', ')} and surrounding areas.`}
+    </p>
+  </div>
+</aside>
