@@ -1,0 +1,16 @@
+{
+  "name": "local-sites-core",
+  "version": "0.1.0",
+  "description": "Shared Astro components and content schema for createmywebsite.co.uk templates.",
+  "type": "module",
+  "exports": {
+    "./schema": "./src/schema.ts",
+    "./components/*": "./src/components/*"
+  },
+  "files": [
+    "src"
+  ],
+  "peerDependencies": {
+    "astro": "^5"
+  }
+}
