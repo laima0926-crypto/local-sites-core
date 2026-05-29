@@ -109,9 +109,21 @@ const messagePlaceholder = isRestaurant
     submitBtn.textContent = 'Sending…';
 
     try {
-      // In a live deployment this posts to a Cloudflare Pages Function or form service (e.g. Web3Forms).
-      // For the demo, simulate a successful send.
-      await new Promise((r) => setTimeout(r, 600));
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json().catch(() => ({} as { error?: string }));
+
+      if (!res.ok) {
+        errorBox.textContent =
+          (result && result.error) ||
+          "Couldn't send right now. Please call or email us instead — details on the right.";
+        errorBox.classList.remove('hidden');
+        errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
 
       successBox.classList.remove('hidden');
       form.reset();
