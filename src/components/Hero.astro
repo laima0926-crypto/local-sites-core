@@ -1,0 +1,91 @@
+---
+import type { SiteConfig } from '../schema';
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+
+const a = site.attestations;
+const yearsTrading = site.business.yearEstablished
+  ? new Date().getFullYear() - site.business.yearEstablished
+  : 0;
+
+const badges: string[] = [];
+if (a.insured) badges.push('Insured');
+if (a.dbsChecked) badges.push('DBS-checked');
+if (a.ecoProducts) badges.push('Eco-friendly products');
+if (yearsTrading >= 2 && !site.contact.nationwide) badges.push(`${yearsTrading}+ years in ${site.contact.serviceAreas[0]}`);
+else if (yearsTrading >= 2) badges.push(`${yearsTrading}+ years`);
+
+const headline = site.business.heroHeadline || site.business.tagline;
+const heroImage = site.business.heroImage || 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&h=750&fit=crop';
+const heroImageAlt = site.business.heroImageAlt || site.business.name;
+---
+
+<section class="relative overflow-hidden">
+  <div class="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-brand-50 -z-10"></div>
+  <div class="absolute -top-32 -right-32 w-96 h-96 bg-brand-100 rounded-full blur-3xl opacity-60 -z-10"></div>
+
+  <div class="mx-auto max-w-6xl px-5 py-16 md:py-24 grid md:grid-cols-5 gap-10 items-center">
+    <div class="md:col-span-3">
+      {badges.length > 0 && (
+        <div class="flex flex-wrap gap-2 mb-6">
+          {badges.map((b) => (
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-white border border-brand-200 text-brand-700 text-xs font-semibold px-3 py-1 shadow-sm">
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>
+              {b}
+            </span>
+          ))}
+        </div>
+      )}
+
+      <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-ink-900">
+        {headline}
+        {site.business.heroHeadlineAccent && (
+          <Fragment><br /><span class="text-brand-700">{site.business.heroHeadlineAccent}</span></Fragment>
+        )}
+      </h1>
+
+      <p class="mt-6 text-lg md:text-xl text-ink-600 leading-relaxed max-w-xl">
+        {site.business.shortDescription}
+      </p>
+
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a
+          href="/contact"
+          class="inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md hover:shadow-lg transition-all"
+        >
+          Get a free quote
+          <span aria-hidden="true">→</span>
+        </a>
+        <a
+          href={`tel:${site.contact.phone}`}
+          class="inline-flex items-center gap-2 rounded-full bg-white hover:bg-ink-50 border border-ink-200 text-ink-800 font-semibold px-6 py-3.5 transition-colors"
+        >
+          <span aria-hidden="true">📞</span> {site.contact.phoneDisplay}
+        </a>
+      </div>
+
+      <p class="mt-6 text-sm text-ink-600">
+        Or browse our <a href="/services" class="text-brand-700 font-medium hover:underline">full services &amp; prices →</a>
+      </p>
+    </div>
+
+    <div class="md:col-span-2">
+      <div class="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-xl bg-brand-100">
+        <img src={heroImage} alt={heroImageAlt} class="w-full h-full object-cover" loading="eager" />
+        <div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur rounded-2xl p-4 shadow-lg">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-2xl">
+              ⏱️
+            </div>
+            <div>
+              <div class="font-display font-bold text-ink-900 text-sm">Quick quotes</div>
+              <div class="text-xs text-ink-600">Reply within a few working hours</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

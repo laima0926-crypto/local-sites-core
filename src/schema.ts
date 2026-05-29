@@ -54,6 +54,10 @@ export interface SiteConfig {
     longDescription: string; // about page
     yearEstablished?: number;
     isDemo: boolean;
+    heroHeadline?: string; // big H1 on the homepage hero
+    heroHeadlineAccent?: string; // second line, shown in the brand colour
+    heroImage?: string; // hero photo URL
+    heroImageAlt?: string;
   };
   contact: {
     phone: string; // E.164 for tel: links

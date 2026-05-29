@@ -1,0 +1,93 @@
+---
+import type { SiteConfig } from '../schema';
+interface Props {
+  site: SiteConfig;
+  title?: string;
+  description?: string;
+  pathname?: string;
+  image?: string;
+}
+const { site, title, description, pathname = Astro.url.pathname, image } = Astro.props;
+
+const pageTitle = title
+  ? `${title} — ${site.business.name}`
+  : `${site.business.name} — ${site.business.tagline}`;
+const pageDescription = description || site.business.shortDescription;
+const canonical = new URL(pathname, Astro.site ?? 'https://example.co.uk').toString();
+const ogImage = image || '/og-default.png';
+
+const SCHEMA_TYPE: Record<string, string> = {
+  cleaning: 'LocalBusiness',
+  gardener: 'LocalBusiness',
+  pet: 'LocalBusiness',
+  restaurant: 'Restaurant',
+  repair: 'LocalBusiness',
+  trades: 'HomeAndConstructionBusiness',
+};
+const schemaType = SCHEMA_TYPE[site.businessType] || 'LocalBusiness';
+
+const localBusiness = {
+  '@context': 'https://schema.org',
+  '@type': schemaType,
+  name: site.business.name,
+  description: site.business.shortDescription,
+  telephone: site.contact.phone,
+  email: site.contact.email,
+  url: Astro.site?.toString() || 'https://example.co.uk',
+  areaServed: site.contact.nationwide
+    ? { '@type': 'Country', name: 'United Kingdom' }
+    : site.contact.serviceAreas.map((area) => ({ '@type': 'City', name: area })),
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: site.contact.addressLines[0]?.split(',')[0],
+    addressCountry: 'GB',
+  },
+  ...(site.socials.facebook || site.socials.instagram || site.socials.googleBusinessProfile
+    ? {
+        sameAs: [site.socials.facebook, site.socials.instagram, site.socials.googleBusinessProfile].filter(Boolean),
+      }
+    : {}),
+};
+---
+
+<!doctype html>
+<html lang="en-GB" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:locale" content="en_GB" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+  </head>
+  <body class="bg-white text-ink-900 font-sans antialiased">
+    {site.business.isDemo && (
+      <div class="bg-amber-100 border-b border-amber-300 text-amber-900 text-sm py-2 px-4 text-center">
+        <strong>Demo website</strong> — this is a sample of what your business could have. Not a real business.
+      </div>
+    )}
+    <slot />
+  </body>
+</html>
