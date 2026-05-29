@@ -1,0 +1,35 @@
+---
+import type { SiteConfig } from '../schema';
+interface Props {
+  site: SiteConfig;
+  heading?: string;
+}
+const { site, heading = 'How our repairs work' } = Astro.props;
+const r = site.repair ?? {};
+
+const cards: { icon: string; label: string; value: string }[] = [];
+if (r.turnaround) cards.push({ icon: '⏱️', label: 'Typical turnaround', value: r.turnaround });
+if (r.warranty) cards.push({ icon: '🛡️', label: 'Warranty on repairs', value: r.warranty });
+if (r.diagnosticFee) cards.push({ icon: '🔍', label: 'Diagnostic', value: r.diagnosticFee });
+---
+
+{cards.length > 0 && (
+  <section class="py-16 md:py-20 bg-ink-50">
+    <div class="mx-auto max-w-6xl px-5">
+      <h2 class="font-display text-2xl md:text-3xl font-extrabold tracking-tight text-ink-900 text-center">
+        {heading}
+      </h2>
+      <div class="mt-10 grid gap-5 sm:grid-cols-3">
+        {cards.map((card) => (
+          <div class="rounded-2xl bg-white p-6 border border-ink-100 text-center">
+            <div class="mx-auto inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-50 text-3xl">
+              {card.icon}
+            </div>
+            <div class="mt-4 text-sm font-semibold uppercase tracking-wider text-ink-500">{card.label}</div>
+            <div class="mt-1 font-display text-xl font-bold text-ink-900">{card.value}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+)}

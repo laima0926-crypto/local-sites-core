@@ -118,6 +118,9 @@ export interface SiteConfig {
     diagnosticFee?: string;
   };
 
+  // Trades
+  emergencyCallout?: string; // e.g. "24/7 emergency call-out across Lichfield"
+
   // Restaurant
   cuisine?: string; // e.g. "Italian", "Modern British"
   reservationUrl?: string; // external booking link; falls back to /contact when unset

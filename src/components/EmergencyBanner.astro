@@ -1,0 +1,24 @@
+---
+// Prop-driven urgent call-out strip, for trades and other emergency services.
+interface Props {
+  phone: string;
+  phoneDisplay: string;
+  note: string;
+}
+const { phone, phoneDisplay, note } = Astro.props;
+---
+
+<section class="bg-ink-900 text-white">
+  <div class="mx-auto max-w-6xl px-5 py-5 flex flex-col sm:flex-row items-center justify-center gap-x-5 gap-y-3 text-center sm:text-left">
+    <p class="font-display font-bold text-lg flex items-center gap-2">
+      <span class="inline-flex w-2.5 h-2.5 rounded-full bg-brand-500 animate-pulse" aria-hidden="true"></span>
+      {note}
+    </p>
+    <a
+      href={`tel:${phone}`}
+      class="inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold px-6 py-2.5 transition-colors whitespace-nowrap"
+    >
+      <span aria-hidden="true">📞</span> Call {phoneDisplay}
+    </a>
+  </div>
+</section>
