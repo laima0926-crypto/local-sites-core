@@ -6,17 +6,26 @@ interface Props {
 const { site } = Astro.props;
 
 const isRestaurant = site.businessType === 'restaurant';
+const bookingEnabled = !!site.booking?.enabled;
 
 const nav = [
   { href: '/', label: 'Home' },
   isRestaurant ? { href: '/menu', label: 'Menu' } : { href: '/services', label: 'Services' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/about', label: 'About' },
+  ...(bookingEnabled ? [{ href: '/book', label: 'Book' }] : []),
   { href: '/contact', label: 'Contact' },
 ];
 
-const ctaLabel = isRestaurant ? 'Book a table' : 'Get a free quote';
-const ctaHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
+// With booking on, the primary CTA drives to the on-site /book page. Otherwise
+// behaviour is unchanged: restaurants use their reservation link (or /contact),
+// everyone else points at /contact.
+const ctaLabel = bookingEnabled
+  ? (isRestaurant ? 'Book a table' : 'Book now')
+  : (isRestaurant ? 'Book a table' : 'Get a free quote');
+const ctaHref = bookingEnabled
+  ? '/book'
+  : (isRestaurant ? (site.reservationUrl || '/contact') : '/contact');
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---

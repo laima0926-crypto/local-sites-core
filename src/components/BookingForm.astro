@@ -1,0 +1,186 @@
+---
+// Phase 2 — "request a slot" booking form. Posts to /api/booking, which emails
+// the owner (same Resend channel as the contact form). No payment is taken and
+// there is no availability engine: this sends a REQUEST that the owner confirms.
+// The copy makes that explicit so customers never assume a slot is locked.
+import type { SiteConfig } from '../schema';
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+
+const isRestaurant = site.businessType === 'restaurant';
+const heading = isRestaurant ? 'Book a table' : 'Book an appointment';
+const intro =
+  site.booking?.intro ||
+  (isRestaurant
+    ? 'Tell us when you’d like to come in and how many. We’ll confirm by phone or email — usually the same day.'
+    : 'Pick a day and time that suits you. We’ll confirm your slot by phone or email — usually the same day.');
+
+// 30-minute slots. A request, not a live calendar — the owner confirms against
+// real availability, so a broad daytime/evening range is fine for every trade.
+const slots: string[] = [];
+for (let m = 8 * 60; m <= 21 * 60 + 30; m += 30) {
+  const h = Math.floor(m / 60);
+  const mm = m % 60;
+  slots.push(`${String(h).padStart(2, '0')}:${String(mm).padStart(2, '0')}`);
+}
+
+const partySizes = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13+'];
+const notesPlaceholder = isRestaurant
+  ? 'High chair, accessibility, dietary needs, special occasion…'
+  : 'Anything we should know — gate codes, parking, the job itself…';
+---
+
+<form id="booking-form" class="bg-ink-50 rounded-2xl p-6 md:p-8 space-y-4" novalidate>
+  <div>
+    <h2 class="font-display text-2xl font-bold text-ink-900">{heading}</h2>
+    <p class="mt-1 text-sm text-ink-600">{intro}</p>
+  </div>
+
+  <input type="text" name="botcheck" class="absolute opacity-0 pointer-events-none" tabindex="-1" autocomplete="off" aria-hidden="true" style="left:-9999px" />
+
+  <div class="grid sm:grid-cols-2 gap-4">
+    <div>
+      <label for="bf-name" class="block text-sm font-semibold text-ink-800 mb-1.5">Your name <span class="text-red-600">*</span></label>
+      <input id="bf-name" name="name" type="text" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+    </div>
+    <div>
+      <label for="bf-phone" class="block text-sm font-semibold text-ink-800 mb-1.5">Phone <span class="text-red-600">*</span></label>
+      <input id="bf-phone" name="phone" type="tel" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+    </div>
+  </div>
+
+  <div>
+    <label for="bf-email" class="block text-sm font-semibold text-ink-800 mb-1.5">Email <span class="text-red-600">*</span></label>
+    <input id="bf-email" name="email" type="email" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+  </div>
+
+  <div class="grid sm:grid-cols-2 gap-4">
+    <div>
+      <label for="bf-date" class="block text-sm font-semibold text-ink-800 mb-1.5">Preferred date <span class="text-red-600">*</span></label>
+      <input id="bf-date" name="date" type="date" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors bg-white" />
+    </div>
+    <div>
+      <label for="bf-time" class="block text-sm font-semibold text-ink-800 mb-1.5">Preferred time <span class="text-red-600">*</span></label>
+      <select id="bf-time" name="time" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors bg-white">
+        <option value="">Choose a time…</option>
+        {slots.map((t) => <option value={t}>{t}</option>)}
+      </select>
+    </div>
+  </div>
+
+  {isRestaurant ? (
+    <div>
+      <label for="bf-party" class="block text-sm font-semibold text-ink-800 mb-1.5">Party size <span class="text-red-600">*</span></label>
+      <select id="bf-party" name="partySize" required class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors bg-white">
+        <option value="">How many people?</option>
+        {partySizes.map((p) => <option value={p}>{p} {p === '1' ? 'person' : 'people'}</option>)}
+      </select>
+    </div>
+  ) : (
+    site.services.length > 0 && (
+      <div>
+        <label for="bf-service" class="block text-sm font-semibold text-ink-800 mb-1.5">Service needed</label>
+        <select id="bf-service" name="service" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors bg-white">
+          <option value="">Choose a service…</option>
+          {site.services.map((s) => <option value={s.name}>{s.name}</option>)}
+          <option value="not-sure">Not sure — please advise</option>
+        </select>
+      </div>
+    )
+  )}
+
+  {!isRestaurant && (
+    <div>
+      <label for="bf-postcode" class="block text-sm font-semibold text-ink-800 mb-1.5">Postcode</label>
+      <input id="bf-postcode" name="postcode" type="text" placeholder="e.g. WS13 6AB" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+    </div>
+  )}
+
+  <div>
+    <label for="bf-notes" class="block text-sm font-semibold text-ink-800 mb-1.5">Notes <span class="text-ink-400 font-normal">(optional)</span></label>
+    <textarea id="bf-notes" name="notes" rows="4" placeholder={notesPlaceholder} class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors resize-none"></textarea>
+  </div>
+
+  <p class="text-xs text-ink-500">
+    This sends a booking <strong>request</strong> — your slot isn’t confirmed until we reply. By sending, you agree we may contact you about it. We don’t share your details with anyone.
+  </p>
+
+  <div id="bf-error" class="hidden rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3"></div>
+  <div id="bf-success" class="hidden rounded-lg bg-brand-50 border border-brand-200 text-brand-900 text-sm px-4 py-3">
+    Thanks! We’ve got your booking request and we’ll confirm your slot shortly. If it’s urgent, give us a call.
+  </div>
+
+  <button id="bf-submit" type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors">
+    Request my booking
+    <span aria-hidden="true">→</span>
+  </button>
+</form>
+
+<script>
+  const form = document.getElementById('booking-form') as HTMLFormElement;
+  const submitBtn = document.getElementById('bf-submit') as HTMLButtonElement;
+  const errorBox = document.getElementById('bf-error') as HTMLDivElement;
+  const successBox = document.getElementById('bf-success') as HTMLDivElement;
+  const dateInput = document.getElementById('bf-date') as HTMLInputElement;
+
+  // No bookings in the past — set the date floor to today in the visitor's locale.
+  if (dateInput) {
+    const now = new Date();
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    dateInput.min = new Date(now.getTime() - tzOffset).toISOString().slice(0, 10);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    errorBox.classList.add('hidden');
+    successBox.classList.add('hidden');
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    // Honeypot — spam bots fill hidden fields
+    if (data.botcheck) {
+      successBox.classList.remove('hidden');
+      form.reset();
+      return;
+    }
+
+    if (!data.name || !data.email || !data.phone || !data.date || !data.time) {
+      errorBox.textContent = 'Please fill in your name, phone, email and a preferred date and time.';
+      errorBox.classList.remove('hidden');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Sending…';
+
+    try {
+      const res = await fetch('/api/booking', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json().catch(() => ({} as { error?: string }));
+
+      if (!res.ok) {
+        errorBox.textContent =
+          (result && result.error) ||
+          "Couldn't send right now. Please call or email us instead — details on the right.";
+        errorBox.classList.remove('hidden');
+        errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+
+      successBox.classList.remove('hidden');
+      form.reset();
+      successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } catch (err) {
+      errorBox.textContent = "Couldn't send right now. Please call or email us instead — details on the right.";
+      errorBox.classList.remove('hidden');
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = 'Request my booking <span aria-hidden="true">→</span>';
+    }
+  });
+</script>
