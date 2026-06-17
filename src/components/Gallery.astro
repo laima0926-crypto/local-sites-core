@@ -8,9 +8,11 @@ const categories = ['All', ...Array.from(new Set(site.gallery.map((g) => g.categ
 const isRestaurant = site.businessType === 'restaurant';
 const galleryHeading = isRestaurant
   ? 'A taste of what we serve'
-  : `Recent work across ${site.contact.serviceAreas[0]} and surrounding areas`;
+  : (site.contact.serviceAreas?.[0]
+      ? `Recent work across ${site.contact.serviceAreas[0]} and surrounding areas`
+      : 'Our recent work');
 const galleryIntro = isRestaurant
-  ? 'A look at our dishes and our dining room. Click any photo to see it larger.'
+  ? 'A look at our food. Click any photo to see it larger.'
   : 'Real photos from real jobs. Click any image to see it larger.';
 ---
 
