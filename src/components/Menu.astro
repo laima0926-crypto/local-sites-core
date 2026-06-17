@@ -10,7 +10,7 @@ const {
   site,
   preview = false,
   previewHeading = 'A taste of our menu',
-  previewIntro = 'A few of our favourites. See the full menu for everything we serve.',
+  previewIntro = 'A few items from our menu — see the full menu for everything.',
 } = Astro.props;
 
 const menu = site.menu ?? [];
@@ -39,9 +39,9 @@ const TAG_LABELS: Record<string, string> = {
       <h2 class="mt-3 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-ink-900">
         {preview ? previewHeading : 'Our menu'}
       </h2>
-      <p class="mt-4 text-lg text-ink-600 leading-relaxed">
-        {preview ? previewIntro : (site.menuNote || 'Freshly prepared to order. Please let us know about any allergies and we’ll do our best to help.')}
-      </p>
+      {preview && (
+        <p class="mt-4 text-lg text-ink-600 leading-relaxed">{previewIntro}</p>
+      )}
     </div>
 
     {!preview && site.menuNote && (

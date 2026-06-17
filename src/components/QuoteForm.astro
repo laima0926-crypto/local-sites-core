@@ -7,8 +7,8 @@ const { site } = Astro.props;
 const isRestaurant = site.businessType === 'restaurant';
 const formHeading = isRestaurant ? 'Send us a message' : 'Get a free quote';
 const formSubtitle = isRestaurant
-  ? 'Booking enquiries, private events, or any questions — we usually reply the same day.'
-  : 'Tell us about the job. We usually reply within a few working hours.';
+  ? 'Booking enquiries or any questions — send us a message and we\'ll get back to you.'
+  : 'Tell us about the job and we\'ll get back to you.';
 const messageLabel = isRestaurant ? 'Your message' : 'Tell us about the job';
 const messagePlaceholder = isRestaurant
   ? 'Party size, dietary requirements, or anything else…'
@@ -95,7 +95,7 @@ const canSend = !!site.contact.email;
 
   <div id="qf-error" class="hidden rounded-lg bg-red-50 border border-red-200 text-red-800 text-sm px-4 py-3"></div>
   <div id="qf-success" class="hidden rounded-lg bg-brand-50 border border-brand-200 text-brand-900 text-sm px-4 py-3">
-    Thanks! We've got your enquiry. We'll be in touch within a few working hours.
+    Thanks! We've got your enquiry and we'll be in touch as soon as we can.
   </div>
 
   <button id="qf-submit" type="submit" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors">

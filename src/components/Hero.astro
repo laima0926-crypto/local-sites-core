@@ -26,12 +26,14 @@ const primaryLabel = isRestaurant ? 'Book a table' : 'Get a free quote';
 const primaryHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
 const browseHref = isRestaurant ? '/menu' : '/services';
 const browseLabel = isRestaurant ? 'full menu' : 'full services & prices';
-const cardIcon = isRestaurant ? '🍽️' : '⏱️';
-const cardTitle = isRestaurant ? 'Book a table' : 'Quick quotes';
-const cardSubtitle = isRestaurant ? 'Bookings & walk-ins welcome' : 'Reply within a few working hours';
+const cardIcon = isRestaurant ? '🍽️' : '📞';
+const cardTitle = isRestaurant ? 'Book a table' : 'Get a quote';
+const cardSubtitle = 'Call or message us';
 
 const headline = site.business.heroHeadline || site.business.tagline;
-const heroImage = site.business.heroImage || 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=600&h=750&fit=crop';
+// No stock-photo fallback — a random image misrepresents the business. The image
+// column only renders when the customer supplied a hero photo.
+const heroImage = site.business.heroImage;
 const heroImageAlt = site.business.heroImageAlt || site.business.name;
 ---
 
@@ -85,6 +87,7 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
       </p>
     </div>
 
+    {heroImage && (
     <div class="md:col-span-2">
       <div class="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-xl bg-brand-100">
         <img src={heroImage} alt={heroImageAlt} class="w-full h-full object-cover" loading="eager" />
@@ -101,5 +104,6 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
         </div>
       </div>
     </div>
+    )}
   </div>
 </section>
