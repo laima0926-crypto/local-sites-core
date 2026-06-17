@@ -22,12 +22,12 @@ if (yearsTrading >= 2 && !site.contact.nationwide) badges.push(`${yearsTrading}+
 else if (yearsTrading >= 2) badges.push(`${yearsTrading}+ years`);
 
 // Primary action + supporting copy differ for restaurants (book/menu vs quote/services).
-const primaryLabel = isRestaurant ? 'Book a table' : 'Get a free quote';
+const primaryLabel = isRestaurant ? 'Get in touch' : 'Get a free quote';
 const primaryHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
 const browseHref = isRestaurant ? '/menu' : '/services';
 const browseLabel = isRestaurant ? 'full menu' : 'full services & prices';
 const cardIcon = isRestaurant ? '🍽️' : '📞';
-const cardTitle = isRestaurant ? 'Book a table' : 'Get a quote';
+const cardTitle = isRestaurant ? 'Get in touch' : 'Get a quote';
 const cardSubtitle = 'Call or message us';
 
 const headline = site.business.heroHeadline || site.business.tagline;

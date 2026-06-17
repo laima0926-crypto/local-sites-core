@@ -17,7 +17,7 @@ const nav = [
 
 // Bookings/enquiries live on the contact page (which carries optional date/time).
 // Restaurants keep an external reservation link if they have one.
-const ctaLabel = isRestaurant ? 'Book a table' : 'Get a free quote';
+const ctaLabel = isRestaurant ? 'Get in touch' : 'Get a free quote';
 const ctaHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
