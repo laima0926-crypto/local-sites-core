@@ -73,6 +73,7 @@ export interface SiteConfig {
     shortDescription: string; // hero / meta description
     longDescription: string; // about page
     yearEstablished?: number;
+    logo?: string; // logo image path/URL; shown in the header instead of styled text when set
     isDemo: boolean;
     heroHeadline?: string; // big H1 on the homepage hero
     heroHeadlineAccent?: string; // second line, shown in the brand colour
@@ -83,7 +84,7 @@ export interface SiteConfig {
     phone: string; // E.164 for tel: links
     phoneDisplay: string; // human-readable
     whatsapp?: string;
-    email: string;
+    email?: string; // public business email — optional; omitted from the site when not provided
     addressLines: string[];
     serviceAreas: string[];
     nationwide?: boolean; // covers all of the UK

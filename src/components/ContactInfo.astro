@@ -29,14 +29,16 @@ const waNumber = site.contact.whatsapp?.replace(/\D/g, '');
     </div>
   )}
 
-  <div class="rounded-2xl bg-white p-6 border border-ink-100">
-    <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
-      <span aria-hidden="true">✉️</span> Email
-    </h3>
-    <a href={`mailto:${site.contact.email}`} class="text-brand-700 font-medium hover:underline break-all">
-      {site.contact.email}
-    </a>
-  </div>
+  {site.contact.email && (
+    <div class="rounded-2xl bg-white p-6 border border-ink-100">
+      <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
+        <span aria-hidden="true">✉️</span> Email
+      </h3>
+      <a href={`mailto:${site.contact.email}`} class="text-brand-700 font-medium hover:underline break-all">
+        {site.contact.email}
+      </a>
+    </div>
+  )}
 
   <div class="rounded-2xl bg-white p-6 border border-ink-100">
     <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">

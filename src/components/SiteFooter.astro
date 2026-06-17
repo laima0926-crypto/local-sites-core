@@ -21,7 +21,7 @@ const isRestaurant = site.businessType === 'restaurant';
 
         <ul class="mt-5 space-y-2 text-sm">
           <li><a href={`tel:${site.contact.phone}`} class="hover:text-white transition-colors">📞 {site.contact.phoneDisplay}</a></li>
-          <li><a href={`mailto:${site.contact.email}`} class="hover:text-white transition-colors">✉️ {site.contact.email}</a></li>
+          {site.contact.email && <li><a href={`mailto:${site.contact.email}`} class="hover:text-white transition-colors">✉️ {site.contact.email}</a></li>}
           <li class="text-ink-500">📍 {site.contact.addressLines.join(', ')}</li>
         </ul>
       </div>

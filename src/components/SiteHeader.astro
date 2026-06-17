@@ -32,8 +32,10 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 
 <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-ink-100">
   <div class="mx-auto max-w-6xl px-5 py-4 flex items-center justify-between gap-4">
-    <a href="/" class="font-display font-bold text-lg text-ink-900 tracking-tight leading-tight">
-      <span class="text-brand-600">✦</span> {site.business.name}
+    <a href="/" class="flex items-center gap-2 font-display font-bold text-lg text-ink-900 tracking-tight leading-tight">
+      {site.business.logo
+        ? <img src={site.business.logo} alt={site.business.name} class="h-9 w-auto max-w-[200px] object-contain" />
+        : <span><span class="text-brand-600">✦</span> {site.business.name}</span>}
     </a>
 
     <nav class="hidden md:flex items-center gap-6 text-sm text-ink-700 font-medium" aria-label="Primary">

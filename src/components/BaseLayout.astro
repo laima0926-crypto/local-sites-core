@@ -32,7 +32,7 @@ const localBusiness = {
   name: site.business.name,
   description: site.business.shortDescription,
   telephone: site.contact.phone,
-  email: site.contact.email,
+  email: site.contact.email || undefined,
   url: Astro.site?.toString() || 'https://example.co.uk',
   areaServed: site.contact.nationwide
     ? { '@type': 'Country', name: 'United Kingdom' }
