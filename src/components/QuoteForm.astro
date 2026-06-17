@@ -11,10 +11,24 @@ const formSubtitle = isRestaurant
   : 'Tell us about the job. We usually reply within a few working hours.';
 const messageLabel = isRestaurant ? 'Your message' : 'Tell us about the job';
 const messagePlaceholder = isRestaurant
-  ? 'Party size, date & time, dietary requirements, or anything else…'
-  : 'Size of property, rooms involved, preferred dates, anything we should know…';
+  ? 'Party size, dietary requirements, or anything else…'
+  : 'Size of property, rooms involved, anything we should know…';
+// The form emails the business's own public inbox. With no public email there's
+// nowhere to send it, so we hide the form and point people to the phone instead.
+const canSend = !!site.contact.email;
 ---
 
+{!canSend && (
+  <div class="bg-ink-50 rounded-2xl p-6 md:p-8">
+    <h2 class="font-display text-2xl font-bold text-ink-900">Get in touch</h2>
+    <p class="mt-2 text-ink-600">The quickest way to reach us is by phone{site.contact.addressLines.length ? ' — or pop in' : ''}.</p>
+    <a href={`tel:${site.contact.phone}`} class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors">
+      📞 {site.contact.phoneDisplay}
+    </a>
+  </div>
+)}
+
+{canSend && (
 <form id="quote-form" class="bg-ink-50 rounded-2xl p-6 md:p-8 space-y-4" novalidate>
   <div>
     <h2 class="font-display text-2xl font-bold text-ink-900">{formHeading}</h2>
@@ -59,6 +73,17 @@ const messagePlaceholder = isRestaurant
     </div>
   )}
 
+  <div class="grid sm:grid-cols-2 gap-4">
+    <div>
+      <label for="qf-date" class="block text-sm font-semibold text-ink-800 mb-1.5">Preferred date <span class="text-ink-400 font-normal">(optional)</span></label>
+      <input id="qf-date" name="date" type="date" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+    </div>
+    <div>
+      <label for="qf-time" class="block text-sm font-semibold text-ink-800 mb-1.5">Preferred time <span class="text-ink-400 font-normal">(optional)</span></label>
+      <input id="qf-time" name="time" type="time" class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors" />
+    </div>
+  </div>
+
   <div>
     <label for="qf-message" class="block text-sm font-semibold text-ink-800 mb-1.5">{messageLabel} <span class="text-red-600">*</span></label>
     <textarea id="qf-message" name="message" rows="5" required placeholder={messagePlaceholder} class="w-full rounded-lg border border-ink-200 px-3.5 py-2.5 text-ink-900 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition-colors resize-none"></textarea>
@@ -78,9 +103,11 @@ const messagePlaceholder = isRestaurant
     <span aria-hidden="true">→</span>
   </button>
 </form>
+)}
 
 <script>
-  const form = document.getElementById('quote-form') as HTMLFormElement;
+  const form = document.getElementById('quote-form') as HTMLFormElement | null;
+  if (form) {
   const submitBtn = document.getElementById('qf-submit') as HTMLButtonElement;
   const errorBox = document.getElementById('qf-error') as HTMLDivElement;
   const successBox = document.getElementById('qf-success') as HTMLDivElement;
@@ -136,4 +163,5 @@ const messagePlaceholder = isRestaurant
       submitBtn.innerHTML = 'Send my enquiry <span aria-hidden="true">→</span>';
     }
   });
+  }
 </script>
