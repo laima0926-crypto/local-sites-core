@@ -13,8 +13,10 @@ const yearsTrading = site.business.yearEstablished
 
 const badges: string[] = [];
 if (isRestaurant && site.cuisine) badges.push(site.cuisine);
-if (a.insured) badges.push('Insured');
-if (a.dbsChecked) badges.push('DBS-checked');
+// Insurance / DBS are trust signals for trades, cleaners, etc. — but odd on a
+// restaurant, so never show them there.
+if (a.insured && !isRestaurant) badges.push('Insured');
+if (a.dbsChecked && !isRestaurant) badges.push('DBS-checked');
 if (a.ecoProducts) badges.push('Eco-friendly products');
 if (yearsTrading >= 2 && !site.contact.nationwide) badges.push(`${yearsTrading}+ years in ${site.contact.serviceAreas[0]}`);
 else if (yearsTrading >= 2) badges.push(`${yearsTrading}+ years`);
