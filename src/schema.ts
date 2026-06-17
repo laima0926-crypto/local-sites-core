@@ -132,5 +132,13 @@ export interface SiteConfig {
   reservationUrl?: string; // external booking link; falls back to /contact when unset
   menuNote?: string; // shown above the menu, e.g. allergen / dietary note
   menu?: MenuSection[];
+  // The customer's own menu file, shown directly when there are no structured
+  // `menu` sections (image inline; PDF as a viewer + download). Structured `menu`
+  // takes precedence when present — it's the accessible/SEO/editable upgrade.
+  menuFile?: {
+    url: string; // e.g. "/menu/menu.pdf" or "/menu/menu.jpg"
+    type: 'image' | 'pdf';
+    label?: string; // optional caption / button label
+  };
   delivery?: DeliveryLink[];
 }

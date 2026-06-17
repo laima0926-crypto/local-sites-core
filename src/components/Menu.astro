@@ -14,8 +14,13 @@ const {
 } = Astro.props;
 
 const menu = site.menu ?? [];
+const hasStructured = menu.some((s) => s.items && s.items.length > 0);
 // On the homepage preview, show just the first section so the page stays light.
 const sections = preview ? menu.slice(0, 1) : menu;
+
+// Fallback: the customer's own uploaded menu file, shown when there are no
+// structured sections. Structured menu always wins when present.
+const menuFile = !hasStructured ? site.menuFile : undefined;
 
 const TAG_LABELS: Record<string, string> = {
   V: 'Vegetarian',
@@ -85,6 +90,26 @@ const TAG_LABELS: Record<string, string> = {
         </div>
       ))}
     </div>
+
+    {!preview && menuFile && (
+      <div class="mt-12">
+        {menuFile.type === 'image' ? (
+          <figure class="rounded-2xl overflow-hidden border border-ink-100 bg-ink-50">
+            <img src={menuFile.url} alt={menuFile.label || 'Our menu'} class="w-full h-auto" loading="lazy" />
+          </figure>
+        ) : (
+          <object data={menuFile.url} type="application/pdf" class="hidden sm:block w-full h-[80vh] rounded-2xl border border-ink-100 bg-ink-50">
+            <p class="p-6 text-ink-600">Your browser can’t show the PDF here — use the button below.</p>
+          </object>
+        )}
+        <div class="mt-5 text-center">
+          <a href={menuFile.url} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-brand-600 text-white hover:bg-brand-700 font-semibold px-7 py-3 transition-colors">
+            {menuFile.type === 'pdf' ? 'Open / download menu (PDF)' : 'Open full-size menu'}
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    )}
 
     {preview && (
       <div class="mt-12 text-center">
