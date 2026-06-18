@@ -80,6 +80,16 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
         >
           <span aria-hidden="true">📞</span> {site.contact.phoneDisplay}
         </a>
+        {site.delivery && site.delivery.map((d) => (
+          <a
+            href={d.url}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 rounded-full bg-white hover:bg-ink-50 border border-ink-200 text-ink-800 font-semibold px-6 py-3.5 transition-colors"
+          >
+            <span aria-hidden="true">🛵</span> {d.name}
+          </a>
+        ))}
       </div>
 
       <p class="mt-6 text-sm text-ink-600">

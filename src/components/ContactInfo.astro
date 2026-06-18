@@ -39,6 +39,21 @@ const waNumber = site.contact.whatsapp?.replace(/\D/g, '');
     </div>
   )}
 
+  {site.delivery && site.delivery.length > 0 && (
+    <div class="rounded-2xl bg-white p-6 border border-ink-100">
+      <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
+        <span aria-hidden="true">🛵</span> Order online
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        {site.delivery.map((d) => (
+          <a href={d.url} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-white border border-ink-200 hover:border-brand-300 text-ink-800 text-sm font-semibold px-4 py-2 transition-colors">
+            {d.name} <span aria-hidden="true">→</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  )}
+
   <div class="rounded-2xl bg-white p-6 border border-ink-100">
     <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
       <span aria-hidden="true">🕒</span> Opening hours
