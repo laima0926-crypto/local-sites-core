@@ -4,15 +4,23 @@ interface Props {
   site: SiteConfig;
 }
 const { site } = Astro.props;
-const isRestaurant = site.businessType === 'restaurant';
+const bt = site.businessType;
+const isRestaurant = bt === 'restaurant';
 const formHeading = isRestaurant ? 'Send us a message' : 'Get a free quote';
 const formSubtitle = isRestaurant
   ? 'Booking enquiries or any questions — send us a message and we\'ll get back to you.'
-  : 'Tell us about the job and we\'ll get back to you.';
-const messageLabel = isRestaurant ? 'Your message' : 'Tell us about the job';
-const messagePlaceholder = isRestaurant
-  ? 'Party size, dietary requirements, or anything else…'
-  : 'Size of property, rooms involved, anything we should know…';
+  : 'Send us the details and we\'ll get back to you.';
+const messageLabel = isRestaurant ? 'Your message' : bt === 'pet' ? 'Tell us about your pet' : 'Tell us about the job';
+// Placeholder hint tailored to each business type (these are just input hints).
+const PLACEHOLDERS: Record<string, string> = {
+  restaurant: 'Party size, dietary requirements, or anything else…',
+  pet: "Your pet's breed & size, the groom you'd like, and any temperament notes…",
+  cleaning: 'Size of property, rooms involved, anything we should know…',
+  gardener: 'Your garden, what needs doing, and access details…',
+  repair: 'The device or appliance, the make, and what\'s gone wrong…',
+  trades: 'The job, where it is, and when suits you…',
+};
+const messagePlaceholder = PLACEHOLDERS[bt] || 'Tell us what you need and any details that help us help you…';
 // The form emails the business's own public inbox. With no public email there's
 // nowhere to send it, so we hide the form and point people to the phone instead.
 const canSend = !!site.contact.email;
