@@ -113,6 +113,7 @@ export interface SiteConfig {
   faq: Faq[];
 
   // Optional / business-type-specific
+  petAnimals?: string[]; // pet — animals the groomer accepts, e.g. ["Dogs (small)", "Cats", "Rats"]
   seasonalNote?: string; // gardener
   repair?: {
     turnaround?: string;
