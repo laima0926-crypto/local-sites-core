@@ -4,52 +4,58 @@ interface Props {
   site: SiteConfig;
 }
 const { site } = Astro.props;
+const c = site.contact;
+const travels = !!c.nationwide || !!c.travelRadius; // they go to customers
+const area = c.serviceAreas[0] || '';
+
+const eyebrow = travels ? 'Service area' : 'Where to find us';
+let heading = '';
+let intro = '';
+if (c.nationwide) {
+  heading = 'Covering all of the UK';
+  intro = "Wherever you are in the UK, we can help — get in touch and we'll sort out the details.";
+} else if (c.travelRadius) {
+  heading = area ? `We cover within ${c.travelRadius} miles of ${area}` : `We travel within ${c.travelRadius} miles`;
+  intro = 'Not sure if we reach you? Just give us a call.';
+} else {
+  heading = area ? `Find us in ${area}` : 'Find us';
+  intro = 'Come and visit us — find us on the map below.';
+}
 ---
 
 <section class="py-20 md:py-24 bg-white">
   <div class="mx-auto max-w-6xl px-5 text-center">
-    <p class="text-brand-700 font-semibold text-sm uppercase tracking-wider">Service area</p>
-    {site.contact.nationwide ? (
-      <Fragment>
-        <h2 class="mt-3 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-ink-900">
-          Covering all of the UK
-        </h2>
-        <p class="mt-4 text-lg text-ink-600 leading-relaxed max-w-2xl mx-auto">
-          Wherever you are in the UK, we can help — get in touch and we'll sort out the details.
-        </p>
-      </Fragment>
-    ) : (
-      <Fragment>
-        <h2 class="mt-3 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-ink-900">
-          We cover {site.contact.serviceAreas[0]} &amp; surrounding areas
-        </h2>
-        <p class="mt-4 text-lg text-ink-600 leading-relaxed max-w-2xl mx-auto">
-          Not sure if we cover your area? Just give us a call.
-        </p>
+    <p class="text-brand-700 font-semibold text-sm uppercase tracking-wider">{eyebrow}</p>
+    <h2 class="mt-3 font-display text-3xl md:text-4xl font-extrabold tracking-tight text-ink-900">
+      {heading}
+    </h2>
+    <p class="mt-4 text-lg text-ink-600 leading-relaxed max-w-2xl mx-auto">
+      {intro}
+    </p>
 
-        <ul class="mt-10 flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
-          {site.contact.serviceAreas.map((area) => (
-            <li class="inline-flex items-center gap-2 rounded-full bg-brand-50 border border-brand-200 text-brand-800 text-sm font-medium px-4 py-2">
-              <span class="text-brand-600">📍</span>
-              {area}
-            </li>
-          ))}
-        </ul>
+    {travels && !c.nationwide && c.serviceAreas.length > 0 && (
+      <ul class="mt-10 flex flex-wrap justify-center gap-2 max-w-3xl mx-auto">
+        {c.serviceAreas.map((a) => (
+          <li class="inline-flex items-center gap-2 rounded-full bg-brand-50 border border-brand-200 text-brand-800 text-sm font-medium px-4 py-2">
+            <span class="text-brand-600">📍</span>
+            {a}
+          </li>
+        ))}
+      </ul>
+    )}
 
-        {site.contact.googleMapsAreaQuery && (
-          <div class="mt-10 rounded-2xl overflow-hidden shadow-md max-w-4xl mx-auto aspect-[16/9] bg-ink-100">
-            <iframe
-              src={`https://www.google.com/maps?q=${encodeURIComponent(site.contact.googleMapsAreaQuery)}&output=embed`}
-              width="100%"
-              height="100%"
-              loading="lazy"
-              referrerpolicy="no-referrer-when-downgrade"
-              title="Service area map"
-              style="border:0"
-            ></iframe>
-          </div>
-        )}
-      </Fragment>
+    {c.googleMapsAreaQuery && (
+      <div class="mt-10 rounded-2xl overflow-hidden shadow-md max-w-4xl mx-auto aspect-[16/9] bg-ink-100">
+        <iframe
+          src={`https://www.google.com/maps?q=${encodeURIComponent(c.googleMapsAreaQuery)}&output=embed`}
+          width="100%"
+          height="100%"
+          loading="lazy"
+          referrerpolicy="no-referrer-when-downgrade"
+          title="Location map"
+          style="border:0"
+        ></iframe>
+      </div>
     )}
   </div>
 </section>

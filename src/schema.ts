@@ -88,6 +88,7 @@ export interface SiteConfig {
     addressLines: string[];
     serviceAreas: string[];
     nationwide?: boolean; // covers all of the UK
+    travelRadius?: string; // miles they travel for mobile work, e.g. "10". Only when they actually do mobile.
     googleMapsAreaQuery?: string;
   };
   hours: { day: string; hours: string }[];

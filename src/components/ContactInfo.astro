@@ -5,6 +5,21 @@ interface Props {
 }
 const { site } = Astro.props;
 const waNumber = site.contact.whatsapp?.replace(/\D/g, '');
+
+// Factual coverage line — only states what the customer actually provided.
+const c = site.contact;
+const hasAddress = c.addressLines.length > 0;
+const coverage = c.nationwide
+  ? 'Covering all of the UK. Get in touch wherever you are.'
+  : hasAddress && c.travelRadius
+    ? `Based in ${c.addressLines.join(', ')}. Mobile appointments within ${c.travelRadius} miles.`
+    : hasAddress
+      ? `Based in ${c.addressLines.join(', ')}.`
+      : c.travelRadius && c.serviceAreas[0]
+        ? `Mobile service within ${c.travelRadius} miles of ${c.serviceAreas[0]}.`
+        : c.serviceAreas[0]
+          ? `Covering ${c.serviceAreas[0]}.`
+          : '';
 ---
 
 <aside class="space-y-5">
@@ -73,9 +88,7 @@ const waNumber = site.contact.whatsapp?.replace(/\D/g, '');
       <span aria-hidden="true">📍</span> Where we work
     </h3>
     <p class="text-sm text-ink-700 leading-relaxed">
-      {site.contact.nationwide
-        ? 'Covering all of the UK. Get in touch wherever you are.'
-        : `Based in ${site.contact.addressLines.join(', ')}. Covering ${site.contact.serviceAreas.slice(0, 3).join(', ')} and surrounding areas.`}
+      {coverage}
     </p>
   </div>
 </aside>

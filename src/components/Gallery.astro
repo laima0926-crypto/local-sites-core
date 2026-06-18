@@ -9,7 +9,7 @@ const isRestaurant = site.businessType === 'restaurant';
 const galleryHeading = isRestaurant
   ? 'A taste of what we serve'
   : (site.contact.serviceAreas?.[0]
-      ? `Recent work across ${site.contact.serviceAreas[0]} and surrounding areas`
+      ? `Recent work in ${site.contact.serviceAreas[0]}`
       : 'Our recent work');
 const galleryIntro = isRestaurant
   ? 'A look at our food. Click any photo to see it larger.'
