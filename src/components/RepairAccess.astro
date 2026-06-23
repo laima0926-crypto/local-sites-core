@@ -1,0 +1,56 @@
+---
+// "How to get your repair done" — shows the repair business's service model
+// (walk-in / drop-off / on-site call-out / postal) and, where relevant, the
+// address customers visit or post items to. Used on the home and contact pages.
+import type { SiteConfig } from '../schema';
+interface Props {
+  site: SiteConfig;
+  heading?: string;
+}
+const { site, heading = 'How to get your repair done' } = Astro.props;
+const r = site.repair ?? {};
+const models = r.serviceModel ?? [];
+
+// Icon + helper line per service model (matched loosely on the label text).
+function meta(model: string): { icon: string; note: string } {
+  const m = model.toLowerCase();
+  if (m.includes('walk-in')) return { icon: '🚶', note: 'Pop in during opening hours.' };
+  if (m.includes('drop-off')) return { icon: '📦', note: 'Drop it off and collect when ready.' };
+  if (m.includes('call-out') || m.includes('on-site')) return { icon: '🚐', note: 'We come to you.' };
+  if (m.includes('postal')) return { icon: '✉️', note: 'Post it to us and we’ll return it.' };
+  return { icon: '🔧', note: '' };
+}
+
+// The address only matters for the models that involve a physical location.
+const showAddress = !!r.visitAddress && models.some((m) => /walk-in|drop-off|postal/i.test(m));
+---
+
+{models.length > 0 && (
+  <section class="py-16 md:py-20 bg-white">
+    <div class="mx-auto max-w-6xl px-5">
+      <h2 class="font-display text-2xl md:text-3xl font-extrabold tracking-tight text-ink-900 text-center">
+        {heading}
+      </h2>
+      <div class={`mt-10 grid gap-5 ${models.length >= 4 ? 'sm:grid-cols-2 lg:grid-cols-4' : `sm:grid-cols-${models.length}`}`}>
+        {models.map((model) => {
+          const { icon, note } = meta(model);
+          return (
+            <div class="rounded-2xl bg-ink-50 p-6 border border-ink-100 text-center">
+              <div class="mx-auto inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-50 text-3xl">
+                {icon}
+              </div>
+              <div class="mt-4 font-display text-lg font-bold text-ink-900">{model}</div>
+              {note && <p class="mt-1 text-sm text-ink-600">{note}</p>}
+            </div>
+          );
+        })}
+      </div>
+
+      {showAddress && (
+        <p class="mt-8 text-center text-ink-700">
+          <span class="font-semibold">Find us / send to:</span> {r.visitAddress}
+        </p>
+      )}
+    </div>
+  </section>
+)}

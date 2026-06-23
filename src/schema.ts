@@ -119,6 +119,8 @@ export interface SiteConfig {
     turnaround?: string;
     warranty?: string;
     diagnosticFee?: string;
+    serviceModel?: string[]; // how customers get a repair done, e.g. ["Walk-in", "Postal"]
+    visitAddress?: string; // where customers walk in / drop off / post items to
   };
 
   // Trades
