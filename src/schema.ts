@@ -11,7 +11,7 @@ export interface Service {
   slug?: string;
   name: string;
   shortDescription: string;
-  price: string; // e.g. "from £18 per hour", "from £120", "POA"
+  price: string; // e.g. "from £18 per hour", "from £120", "Get a quote"
   icon?: string;
   whoFor?: string;
   included?: string[];
