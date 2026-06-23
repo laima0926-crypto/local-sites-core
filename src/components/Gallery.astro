@@ -14,8 +14,13 @@ const galleryHeading = isRestaurant
 const galleryIntro = isRestaurant
   ? 'A look at our food. Click any photo to see it larger.'
   : 'Real photos from real jobs. Click any image to see it larger.';
+
+// No photos uploaded → render nothing at all (no empty heading/grid).
+const hasGallery = site.gallery.length > 0;
 ---
 
+{hasGallery && (
+<Fragment>
 <section class="py-20 md:py-24 bg-white">
   <div class="mx-auto max-w-6xl px-5">
     <div class="max-w-2xl">
@@ -84,8 +89,11 @@ const galleryIntro = isRestaurant
     <figcaption id="lightbox-caption" class="mt-3 text-center text-sm text-white/90"></figcaption>
   </figure>
 </div>
+</Fragment>
+)}
 
 <script>
+  if (document.getElementById('gallery-grid')) {
   const filters = document.querySelectorAll<HTMLButtonElement>('.gallery-filter');
   const items = document.querySelectorAll<HTMLElement>('.gallery-item');
 
@@ -146,4 +154,5 @@ const galleryIntro = isRestaurant
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && !lightbox.classList.contains('hidden')) closeLightbox();
   });
+  }
 </script>

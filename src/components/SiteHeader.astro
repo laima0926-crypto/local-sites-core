@@ -7,10 +7,14 @@ const { site } = Astro.props;
 
 const isRestaurant = site.businessType === 'restaurant';
 
+// The /gallery page hosts the photo grid and before/after pairs. With neither,
+// the page redirects home — so don't link to it from the nav.
+const hasGalleryPage = site.gallery.length > 0 || site.beforeAfter.length > 0;
+
 const nav = [
   { href: '/', label: 'Home' },
   isRestaurant ? { href: '/menu', label: 'Menu' } : { href: '/services', label: 'Services' },
-  { href: '/gallery', label: 'Gallery' },
+  ...(hasGalleryPage ? [{ href: '/gallery', label: 'Gallery' }] : []),
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];

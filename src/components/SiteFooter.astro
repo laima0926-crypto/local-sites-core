@@ -6,6 +6,8 @@ interface Props {
 const { site } = Astro.props;
 const year = new Date().getFullYear();
 const isRestaurant = site.businessType === 'restaurant';
+// Mirror the header: only link the /gallery page when it has content.
+const hasGalleryPage = site.gallery.length > 0 || site.beforeAfter.length > 0;
 ---
 
 <footer class="bg-ink-900 text-ink-400 border-t border-ink-800">
@@ -33,7 +35,7 @@ const isRestaurant = site.businessType === 'restaurant';
           {isRestaurant
             ? <li><a href="/menu" class="hover:text-white transition-colors">Menu</a></li>
             : <li><a href="/services" class="hover:text-white transition-colors">Services</a></li>}
-          <li><a href="/gallery" class="hover:text-white transition-colors">Gallery</a></li>
+          {hasGalleryPage && <li><a href="/gallery" class="hover:text-white transition-colors">Gallery</a></li>}
           <li><a href="/about" class="hover:text-white transition-colors">About</a></li>
           <li><a href="/contact" class="hover:text-white transition-colors">Contact</a></li>
         </ul>
