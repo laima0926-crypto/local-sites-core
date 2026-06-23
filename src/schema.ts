@@ -66,6 +66,13 @@ export interface DeliveryLink {
 
 export interface SiteConfig {
   businessType: BusinessType;
+  url?: string; // canonical site origin, e.g. "https://acme.co.uk" (for <link rel=canonical>/og:url)
+  theme?: {
+    // Brand colour scale as space-separated RGB channels ("124 58 237"), keyed
+    // 50–900. Injected as CSS vars by BaseLayout; Tailwind reads them via
+    // rgb(var(--brand-600) / <alpha-value>). Omit to use the template default.
+    brand?: Record<string, string>;
+  };
   business: {
     name: string;
     legalName?: string;

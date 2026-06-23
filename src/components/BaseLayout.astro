@@ -13,8 +13,16 @@ const pageTitle = title
   ? `${title} — ${site.business.name}`
   : `${site.business.name} — ${site.business.tagline}`;
 const pageDescription = description || site.business.shortDescription;
-const canonical = new URL(pathname, Astro.site ?? 'https://example.co.uk').toString();
+// Prefer the client's own domain (site.url) for canonical/og:url, then Astro.site,
+// then a placeholder. Without this, every client self-canonicalises to example.co.uk.
+const siteOrigin = site.url || Astro.site?.toString() || 'https://example.co.uk';
+const canonical = new URL(pathname, siteOrigin).toString();
 const ogImage = image || '/og-default.png';
+
+// Brand colour scale → CSS variables, ONLY when the client has a theme. Each
+// template's tailwind config carries its own colour as the var() fallback, so a
+// site with no theme keeps the template's default palette (no regression).
+const brandVars = Object.entries(site.theme?.brand ?? {}).map(([k, v]) => `--brand-${k}:${v}`).join(';');
 
 const SCHEMA_TYPE: Record<string, string> = {
   cleaning: 'LocalBusiness',
@@ -33,7 +41,7 @@ const localBusiness = {
   description: site.business.shortDescription,
   telephone: site.contact.phone,
   email: site.contact.email || undefined,
-  url: Astro.site?.toString() || 'https://example.co.uk',
+  url: siteOrigin,
   areaServed: site.contact.nationwide
     ? { '@type': 'Country', name: 'United Kingdom' }
     : site.contact.serviceAreas.map((area) => ({ '@type': 'City', name: area })),
@@ -63,6 +71,7 @@ const localBusiness = {
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
+    {brandVars && <style set:html={`:root{${brandVars}}`}></style>}
     <title>{pageTitle}</title>
     <meta name="description" content={pageDescription} />
     <link rel="canonical" href={canonical} />
