@@ -1,5 +1,6 @@
 ---
 import type { SiteConfig } from '../schema';
+import Icon from './Icon.astro';
 import { telAttrs, waAttrs } from '../obfuscate';
 interface Props {
   site: SiteConfig;
@@ -26,7 +27,7 @@ const coverage = c.nationwide
 <aside class="space-y-5">
   <div class="rounded-2xl bg-brand-50 p-6 border border-brand-100">
     <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
-      <span aria-hidden="true">📞</span> Call us
+      <Icon name="phone" class="w-5 h-5 text-brand-600" /> Call us
     </h3>
     <a href="/contact" {...telAttrs(site.contact.phone, site.contact.phoneDisplay)} class="block text-2xl font-display font-extrabold text-brand-700 hover:underline">
       <span data-v>Tap to call</span>
@@ -36,7 +37,7 @@ const coverage = c.nationwide
   {site.contact.whatsapp && waNumber && (
     <div class="rounded-2xl bg-white p-6 border border-ink-100">
       <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
-        <span aria-hidden="true">💬</span> WhatsApp
+        <Icon name="message-circle" class="w-5 h-5 text-brand-600" /> WhatsApp
       </h3>
       <a href="/contact" {...waAttrs(waNumber)} target="_blank" rel="noopener" class="inline-flex items-center gap-2 rounded-full bg-[#25D366] hover:bg-[#1ebd58] text-white text-sm font-semibold px-5 py-2.5">
         Message us on WhatsApp
@@ -47,7 +48,7 @@ const coverage = c.nationwide
   {site.contact.email && (
     <div class="rounded-2xl bg-white p-6 border border-ink-100">
       <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
-        <span aria-hidden="true">✉️</span> Prefer to write?
+        <Icon name="mail" class="w-5 h-5 text-brand-600" /> Prefer to write?
       </h3>
       <p class="text-sm text-ink-700">Use the enquiry form on this page and your message lands straight in our inbox.</p>
     </div>
@@ -56,7 +57,7 @@ const coverage = c.nationwide
   {site.delivery && site.delivery.length > 0 && (
     <div class="rounded-2xl bg-white p-6 border border-ink-100">
       <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
-        <span aria-hidden="true">🛵</span> Order online
+        <Icon name="bike" class="w-5 h-5 text-brand-600" /> Order online
       </h3>
       <div class="flex flex-wrap gap-2">
         {site.delivery.map((d) => (
@@ -70,7 +71,7 @@ const coverage = c.nationwide
 
   <div class="rounded-2xl bg-white p-6 border border-ink-100">
     <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
-      <span aria-hidden="true">🕒</span> Opening hours
+      <Icon name="clock" class="w-5 h-5 text-brand-600" /> Opening hours
     </h3>
     <ul class="space-y-2 text-sm">
       {site.hours.map((row) => (
@@ -84,7 +85,7 @@ const coverage = c.nationwide
 
   <div class="rounded-2xl bg-white p-6 border border-ink-100">
     <h3 class="font-display font-bold text-ink-900 mb-2 flex items-center gap-2">
-      <span aria-hidden="true">📍</span> Where we work
+      <Icon name="map-pin" class="w-5 h-5 text-brand-600" /> Where we work
     </h3>
     <p class="text-sm text-ink-700 leading-relaxed">
       {coverage}

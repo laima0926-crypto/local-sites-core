@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 // Prop-driven urgent call-out strip, for trades and other emergency services.
 interface Props {
   phone: string;
@@ -20,7 +21,7 @@ import { telAttrs } from '../obfuscate';
       {...telAttrs(phone, `Call ${phoneDisplay}`)}
       class="inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-500 text-white font-semibold px-6 py-2.5 transition-colors whitespace-nowrap"
     >
-      <span aria-hidden="true">📞</span> <span data-v>Call now</span>
+      <Icon name="phone" class="w-4 h-4" /> <span data-v>Call now</span>
     </a>
   </div>
 </section>

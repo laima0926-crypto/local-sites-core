@@ -1,5 +1,6 @@
 ---
 import type { SiteConfig } from '../schema';
+import Icon from './Icon.astro';
 import { telAttrs } from '../obfuscate';
 interface Props {
   site: SiteConfig;
@@ -27,7 +28,7 @@ const primaryLabel = isRestaurant ? 'Get in touch' : 'Get a free quote';
 const primaryHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
 const browseHref = isRestaurant ? '/menu' : '/services';
 const browseLabel = isRestaurant ? 'full menu' : 'full services & prices';
-const cardIcon = isRestaurant ? '🍽️' : '📞';
+const cardIcon = isRestaurant ? 'utensils' : 'phone';
 const cardTitle = isRestaurant ? 'Get in touch' : 'Get a quote';
 const cardSubtitle = 'Call or message us';
 
@@ -77,7 +78,7 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
           {...telAttrs(site.contact.phone, site.contact.phoneDisplay)}
           class="inline-flex items-center gap-2 rounded-full bg-white hover:bg-ink-50 border border-ink-200 text-ink-800 font-semibold px-6 py-3.5 transition-colors"
         >
-          <span aria-hidden="true">📞</span> <span data-v>Call us</span>
+          <Icon name="phone" class="w-4 h-4" /> <span data-v>Call us</span>
         </a>
         {site.delivery && site.delivery.map((d) => (
           <a
@@ -86,7 +87,7 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
             rel="noopener"
             class="inline-flex items-center gap-2 rounded-full bg-white hover:bg-ink-50 border border-ink-200 text-ink-800 font-semibold px-6 py-3.5 transition-colors"
           >
-            <span aria-hidden="true">🛵</span> {d.name}
+            <Icon name="bike" class="w-4 h-4" /> {d.name}
           </a>
         ))}
       </div>
@@ -102,8 +103,8 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
         <img src={heroImage} alt={heroImageAlt} class="w-full h-full object-cover" loading="eager" />
         <div class="absolute bottom-4 left-4 right-4 bg-white/95 backdrop-blur rounded-2xl p-4 shadow-lg">
           <div class="flex items-center gap-3">
-            <div class="w-12 h-12 rounded-full bg-brand-100 flex items-center justify-center text-2xl">
-              {cardIcon}
+            <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center">
+              <Icon name={cardIcon} class="w-6 h-6" />
             </div>
             <div>
               <div class="font-display font-bold text-ink-900 text-sm">{cardTitle}</div>

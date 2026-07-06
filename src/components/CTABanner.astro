@@ -1,4 +1,5 @@
 ---
+import Icon from './Icon.astro';
 // Shared call-to-action banner. Prop-driven so any template can use it.
 interface Props {
   phone: string;
@@ -29,7 +30,7 @@ import { telAttrs } from '../obfuscate';
         {...telAttrs(phone, `Call ${phoneDisplay}`)}
         class="inline-flex items-center gap-2 rounded-full bg-white text-brand-700 font-semibold px-6 py-3 hover:bg-brand-50 transition-colors"
       >
-        📞 <span data-v>Call us</span>
+        <Icon name="phone" class="w-4 h-4" /> <span data-v>Call us</span>
       </a>
       <a
         href={secondaryHref}

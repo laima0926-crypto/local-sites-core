@@ -3,6 +3,7 @@
 // (walk-in / drop-off / on-site call-out / postal) and, where relevant, the
 // address customers visit or post items to. Used on the home and contact pages.
 import type { SiteConfig } from '../schema';
+import Icon from './Icon.astro';
 interface Props {
   site: SiteConfig;
   heading?: string;
@@ -14,11 +15,11 @@ const models = r.serviceModel ?? [];
 // Icon + helper line per service model (matched loosely on the label text).
 function meta(model: string): { icon: string; note: string } {
   const m = model.toLowerCase();
-  if (m.includes('walk-in')) return { icon: '🚶', note: 'Pop in during opening hours.' };
-  if (m.includes('drop-off')) return { icon: '📦', note: 'Drop it off and collect when ready.' };
-  if (m.includes('call-out') || m.includes('on-site')) return { icon: '🚐', note: 'We come to you.' };
-  if (m.includes('postal')) return { icon: '✉️', note: 'Post it to us and we’ll return it.' };
-  return { icon: '🔧', note: '' };
+  if (m.includes('walk-in')) return { icon: 'footprints', note: 'Pop in during opening hours.' };
+  if (m.includes('drop-off')) return { icon: 'package', note: 'Drop it off and collect when ready.' };
+  if (m.includes('call-out') || m.includes('on-site')) return { icon: 'truck', note: 'We come to you.' };
+  if (m.includes('postal')) return { icon: 'mail', note: 'Post it to us and we’ll return it.' };
+  return { icon: 'wrench', note: '' };
 }
 
 // The address only matters for the models that involve a physical location.
@@ -36,8 +37,8 @@ const showAddress = !!r.visitAddress && models.some((m) => /walk-in|drop-off|pos
           const { icon, note } = meta(model);
           return (
             <div class="rounded-2xl bg-ink-50 p-6 border border-ink-100 text-center">
-              <div class="mx-auto inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-50 text-3xl">
-                {icon}
+              <div class="mx-auto inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-50 text-brand-700">
+                <Icon name={icon} class="w-7 h-7" />
               </div>
               <div class="mt-4 font-display text-lg font-bold text-ink-900">{model}</div>
               {note && <p class="mt-1 text-sm text-ink-600">{note}</p>}

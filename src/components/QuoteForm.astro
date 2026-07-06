@@ -1,5 +1,6 @@
 ---
 import type { SiteConfig } from '../schema';
+import Icon from './Icon.astro';
 import { telAttrs } from '../obfuscate';
 interface Props {
   site: SiteConfig;
@@ -32,7 +33,7 @@ const canSend = !!site.contact.email;
     <h2 class="font-display text-2xl font-bold text-ink-900">Get in touch</h2>
     <p class="mt-2 text-ink-600">The quickest way to reach us is by phone{site.contact.addressLines.length ? ', or pop in' : ''}.</p>
     <a href="/contact" {...telAttrs(site.contact.phone, site.contact.phoneDisplay)} class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors">
-      📞 <span data-v>Call us</span>
+      <Icon name="phone" class="w-4 h-4" /> <span data-v>Call us</span>
     </a>
   </div>
 )}
