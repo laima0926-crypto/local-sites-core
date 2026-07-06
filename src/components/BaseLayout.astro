@@ -45,8 +45,10 @@ const localBusiness = {
   '@type': schemaType,
   name: site.business.name,
   description: site.business.shortDescription,
-  telephone: site.contact.phone,
-  email: site.contact.email || undefined,
+  // No telephone/email here on purpose: JSON-LD is plain text in the HTML and
+  // a prime target for spam harvesters. Google gets NAP data from the
+  // Business Profile instead; the site shows the number via the obfuscated
+  // client-side renderer (see ../obfuscate.ts).
   url: siteOrigin,
   areaServed: site.contact.nationwide
     ? { '@type': 'Country', name: 'United Kingdom' }
@@ -153,6 +155,25 @@ const localBusiness = {
         els.forEach(function (el) { io.observe(el); });
         // Safety net: never leave content hidden if something goes wrong
         setTimeout(function () { els.forEach(function (el) { el.classList.add('is-visible'); }); }, 2500);
+      })();
+    </script>
+
+    <!-- Assemble obfuscated contact links (see ../obfuscate.ts). The number
+         never appears in the HTML source; it's built here from chunks so
+         scraper bots can't harvest it. -->
+    <script is:inline>
+      (function () {
+        var els = document.querySelectorAll('[data-k1]');
+        Array.prototype.forEach.call(els, function (el) {
+          var n = (el.getAttribute('data-k1') || '') + (el.getAttribute('data-k2') || '') + (el.getAttribute('data-k3') || '');
+          if (!n) return;
+          el.setAttribute('href', el.getAttribute('data-u') === 'w' ? 'https://wa.me/' + n : 'tel:' + n);
+          var t = el.querySelector('[data-v]');
+          var d1 = el.getAttribute('data-v1');
+          if (t && d1 !== null) {
+            t.textContent = d1 + (el.getAttribute('data-v2') || '') + (el.getAttribute('data-v3') || '');
+          }
+        });
       })();
     </script>
   </body>

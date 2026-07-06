@@ -1,5 +1,6 @@
 ---
 import type { SiteConfig } from '../schema';
+import { telAttrs } from '../obfuscate';
 interface Props {
   site: SiteConfig;
 }
@@ -72,10 +73,11 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
           <span aria-hidden="true">→</span>
         </a>
         <a
-          href={`tel:${site.contact.phone}`}
+          href="/contact"
+          {...telAttrs(site.contact.phone, site.contact.phoneDisplay)}
           class="inline-flex items-center gap-2 rounded-full bg-white hover:bg-ink-50 border border-ink-200 text-ink-800 font-semibold px-6 py-3.5 transition-colors"
         >
-          <span aria-hidden="true">📞</span> {site.contact.phoneDisplay}
+          <span aria-hidden="true">📞</span> <span data-v>Call us</span>
         </a>
         {site.delivery && site.delivery.map((d) => (
           <a

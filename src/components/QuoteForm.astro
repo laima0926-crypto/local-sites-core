@@ -1,5 +1,6 @@
 ---
 import type { SiteConfig } from '../schema';
+import { telAttrs } from '../obfuscate';
 interface Props {
   site: SiteConfig;
 }
@@ -30,8 +31,8 @@ const canSend = !!site.contact.email;
   <div class="bg-ink-50 rounded-2xl p-6 md:p-8">
     <h2 class="font-display text-2xl font-bold text-ink-900">Get in touch</h2>
     <p class="mt-2 text-ink-600">The quickest way to reach us is by phone{site.contact.addressLines.length ? ' — or pop in' : ''}.</p>
-    <a href={`tel:${site.contact.phone}`} class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors">
-      📞 {site.contact.phoneDisplay}
+    <a href="/contact" {...telAttrs(site.contact.phone, site.contact.phoneDisplay)} class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors">
+      📞 <span data-v>Call us</span>
     </a>
   </div>
 )}
@@ -154,7 +155,7 @@ const canSend = !!site.contact.email;
       if (!res.ok) {
         errorBox.textContent =
           (result && result.error) ||
-          "Couldn't send right now. Please call or email us instead — details on the right.";
+          "Couldn't send right now. Please call us instead (number on this page).";
         errorBox.classList.remove('hidden');
         errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
         return;
@@ -164,7 +165,7 @@ const canSend = !!site.contact.email;
       form.reset();
       successBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch (err) {
-      errorBox.textContent = "Couldn't send right now. Please call or email us instead — details on the right.";
+      errorBox.textContent = "Couldn't send right now. Please call us instead (number on this page).";
       errorBox.classList.remove('hidden');
     } finally {
       submitBtn.disabled = false;
