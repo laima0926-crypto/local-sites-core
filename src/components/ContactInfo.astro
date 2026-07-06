@@ -69,6 +69,7 @@ const coverage = c.nationwide
     </div>
   )}
 
+  {site.hours.length > 0 && (
   <div class="rounded-2xl bg-white p-6 border border-ink-100">
     <h3 class="font-display font-bold text-ink-900 mb-3 flex items-center gap-2">
       <Icon name="clock" class="w-5 h-5 text-brand-600" /> Opening hours
@@ -82,7 +83,9 @@ const coverage = c.nationwide
       ))}
     </ul>
   </div>
+  )}
 
+  {coverage && (
   <div class="rounded-2xl bg-white p-6 border border-ink-100">
     <h3 class="font-display font-bold text-ink-900 mb-2 flex items-center gap-2">
       <Icon name="map-pin" class="w-5 h-5 text-brand-600" /> Where we work
@@ -91,4 +94,5 @@ const coverage = c.nationwide
       {coverage}
     </p>
   </div>
+  )}
 </aside>

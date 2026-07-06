@@ -11,7 +11,9 @@ const { site, title, description, pathname = Astro.url.pathname, image } = Astro
 
 const pageTitle = title
   ? `${title} | ${site.business.name}`
-  : `${site.business.name} | ${site.business.tagline}`;
+  : site.business.tagline
+    ? `${site.business.name} | ${site.business.tagline}`
+    : site.business.name;
 const pageDescription = description || site.business.shortDescription;
 // Prefer the client's own domain (site.url) for canonical/og:url, then Astro.site,
 // then a placeholder. Without this, every client self-canonicalises to example.co.uk.

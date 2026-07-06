@@ -26,7 +26,7 @@ const hasGalleryPage = site.gallery.length > 0 || site.beforeAfter.length > 0;
         <ul class="mt-5 space-y-2 text-sm">
           <li><a href="/contact" {...telAttrs(site.contact.phone, site.contact.phoneDisplay)} class="hover:text-white transition-colors"><Icon name="phone" class="w-4 h-4" /> <span data-v>Call us</span></a></li>
           {site.contact.email && <li><a href="/contact" class="hover:text-white transition-colors"><Icon name="mail" class="w-4 h-4" /> Send us a message</a></li>}
-          <li class="text-ink-500"><Icon name="map-pin" class="w-4 h-4" /> {site.contact.addressLines.join(', ')}</li>
+          {site.contact.addressLines.length > 0 && <li class="text-ink-500"><Icon name="map-pin" class="w-4 h-4" /> {site.contact.addressLines.join(', ')}</li>}
         </ul>
       </div>
 

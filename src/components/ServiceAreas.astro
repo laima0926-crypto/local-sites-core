@@ -7,6 +7,7 @@ interface Props {
 const { site } = Astro.props;
 const c = site.contact;
 const travels = !!c.nationwide || !!c.travelRadius; // they go to customers
+const hasAddress = c.addressLines.length > 0;
 const area = c.serviceAreas[0] || '';
 
 const eyebrow = travels ? 'Service area' : 'Where to find us';
@@ -18,9 +19,13 @@ if (c.nationwide) {
 } else if (c.travelRadius) {
   heading = area ? `We cover within ${c.travelRadius} miles of ${area}` : `We travel within ${c.travelRadius} miles`;
   intro = 'Not sure if we reach you? Just give us a call.';
-} else {
+} else if (hasAddress) {
   heading = area ? `Find us in ${area}` : 'Find us';
   intro = 'Come and visit us. You will find us on the map below.';
+} else {
+  // No premises attested and no radius given: state coverage, invent nothing.
+  heading = area ? `Covering ${area}` : 'Our service area';
+  intro = 'Get in touch to check we cover your area.';
 }
 ---
 

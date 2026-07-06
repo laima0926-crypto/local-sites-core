@@ -20,7 +20,7 @@ if (isRestaurant && site.cuisine) badges.push(site.cuisine);
 if (a.insured && !isRestaurant) badges.push('Insured');
 if (a.dbsChecked && !isRestaurant) badges.push('DBS-checked');
 if (a.ecoProducts) badges.push('Eco-friendly products');
-if (yearsTrading >= 2 && !site.contact.nationwide) badges.push(`${yearsTrading}+ years in ${site.contact.serviceAreas[0]}`);
+if (yearsTrading >= 2 && !site.contact.nationwide && site.contact.serviceAreas[0]) badges.push(`${yearsTrading}+ years in ${site.contact.serviceAreas[0]}`);
 else if (yearsTrading >= 2) badges.push(`${yearsTrading}+ years`);
 
 // Primary action + supporting copy differ for restaurants (book/menu vs quote/services).
@@ -32,7 +32,11 @@ const cardIcon = isRestaurant ? 'utensils' : 'phone';
 const cardTitle = isRestaurant ? 'Get in touch' : 'Get a quote';
 const cardSubtitle = 'Call or message us';
 
-const headline = site.business.heroHeadline || site.business.tagline;
+// Customer-supplied headline wins; the business name is the fallback H1.
+const heroHeadline = site.business.heroHeadline;
+const heroAccent = site.business.heroHeadlineAccent;
+// Don't repeat the same words twice (headline fallback used to equal tagline).
+const showTagline = !!site.business.tagline && site.business.tagline !== heroHeadline;
 // No stock-photo fallback — a random image misrepresents the business. The image
 // column only renders when the customer supplied a hero photo.
 const heroImage = site.business.heroImage;
@@ -58,12 +62,15 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
       )}
 
       <h1 class="font-display text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.05] text-ink-900">
-        {site.business.name}
+        {heroHeadline ? heroHeadline : site.business.name}
+        {heroHeadline && heroAccent && <span class="text-brand-700"> {heroAccent}</span>}
       </h1>
 
-      <p class="mt-5 font-display text-xl md:text-2xl font-semibold text-brand-700 leading-snug max-w-xl">
-        {site.business.tagline}
-      </p>
+      {showTagline && (
+        <p class="mt-5 font-display text-xl md:text-2xl font-semibold text-brand-700 leading-snug max-w-xl">
+          {site.business.tagline}
+        </p>
+      )}
 
       <div class="mt-8 flex flex-wrap items-center gap-3">
         <a
