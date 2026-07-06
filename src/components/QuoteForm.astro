@@ -9,7 +9,7 @@ const bt = site.businessType;
 const isRestaurant = bt === 'restaurant';
 const formHeading = isRestaurant ? 'Send us a message' : 'Get a free quote';
 const formSubtitle = isRestaurant
-  ? 'Booking enquiries or any questions — send us a message and we\'ll get back to you.'
+  ? 'Booking enquiries or any questions welcome. Send us a message and we\'ll get back to you.'
   : 'Send us the details and we\'ll get back to you.';
 const messageLabel = isRestaurant ? 'Your message' : bt === 'pet' ? 'Tell us about your pet' : 'Tell us about the job';
 // Placeholder hint tailored to each business type (these are just input hints).
@@ -30,7 +30,7 @@ const canSend = !!site.contact.email;
 {!canSend && (
   <div class="bg-ink-50 rounded-2xl p-6 md:p-8">
     <h2 class="font-display text-2xl font-bold text-ink-900">Get in touch</h2>
-    <p class="mt-2 text-ink-600">The quickest way to reach us is by phone{site.contact.addressLines.length ? ' — or pop in' : ''}.</p>
+    <p class="mt-2 text-ink-600">The quickest way to reach us is by phone{site.contact.addressLines.length ? ', or pop in' : ''}.</p>
     <a href="/contact" {...telAttrs(site.contact.phone, site.contact.phoneDisplay)} class="mt-4 inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors">
       📞 <span data-v>Call us</span>
     </a>
@@ -70,7 +70,7 @@ const canSend = !!site.contact.email;
         {site.services.map((s) => (
           <option value={s.name}>{s.name}</option>
         ))}
-        <option value="not-sure">Not sure — please advise</option>
+        <option value="not-sure">Not sure, please advise</option>
       </select>
     </div>
   )}

@@ -13,13 +13,13 @@ let heading = '';
 let intro = '';
 if (c.nationwide) {
   heading = 'Covering all of the UK';
-  intro = "Wherever you are in the UK, we can help — get in touch and we'll sort out the details.";
+  intro = "Wherever you are in the UK, we can help. Get in touch and we'll sort out the details.";
 } else if (c.travelRadius) {
   heading = area ? `We cover within ${c.travelRadius} miles of ${area}` : `We travel within ${c.travelRadius} miles`;
   intro = 'Not sure if we reach you? Just give us a call.';
 } else {
   heading = area ? `Find us in ${area}` : 'Find us';
-  intro = 'Come and visit us — find us on the map below.';
+  intro = 'Come and visit us. You will find us on the map below.';
 }
 ---
 

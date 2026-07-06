@@ -24,11 +24,11 @@ const { site } = Astro.props;
           <figure>
             <div class="grid grid-cols-2 gap-1 rounded-2xl overflow-hidden shadow-md">
               <div class="relative">
-                <img src={item.before} alt={`Before — ${item.alt}`} class="w-full aspect-square object-cover" loading="lazy" />
+                <img src={item.before} alt={`Before: ${item.alt}`} class="w-full aspect-square object-cover" loading="lazy" />
                 <span class="absolute top-2 left-2 bg-ink-900/80 text-white text-xs font-semibold px-2 py-1 rounded">Before</span>
               </div>
               <div class="relative">
-                <img src={item.after} alt={`After — ${item.alt}`} class="w-full aspect-square object-cover" loading="lazy" />
+                <img src={item.after} alt={`After: ${item.alt}`} class="w-full aspect-square object-cover" loading="lazy" />
                 <span class="absolute top-2 right-2 bg-brand-600 text-white text-xs font-semibold px-2 py-1 rounded">After</span>
               </div>
             </div>

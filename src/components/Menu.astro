@@ -10,7 +10,7 @@ const {
   site,
   preview = false,
   previewHeading = 'A taste of our menu',
-  previewIntro = 'A few items from our menu — see the full menu for everything.',
+  previewIntro = 'A few items from our menu. See the full menu for everything.',
 } = Astro.props;
 
 const menu = site.menu ?? [];
@@ -99,7 +99,7 @@ const TAG_LABELS: Record<string, string> = {
           </figure>
         ) : (
           <object data={menuFile.url} type="application/pdf" class="hidden sm:block w-full h-[80vh] rounded-2xl border border-ink-100 bg-ink-50">
-            <p class="p-6 text-ink-600">Your browser can’t show the PDF here — use the button below.</p>
+            <p class="p-6 text-ink-600">Your browser can’t show the PDF here. Use the button below.</p>
           </object>
         )}
         <div class="mt-5 text-center">

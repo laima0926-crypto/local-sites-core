@@ -10,8 +10,8 @@ interface Props {
 const { site, title, description, pathname = Astro.url.pathname, image } = Astro.props;
 
 const pageTitle = title
-  ? `${title} — ${site.business.name}`
-  : `${site.business.name} — ${site.business.tagline}`;
+  ? `${title} | ${site.business.name}`
+  : `${site.business.name} | ${site.business.tagline}`;
 const pageDescription = description || site.business.shortDescription;
 // Prefer the client's own domain (site.url) for canonical/og:url, then Astro.site,
 // then a placeholder. Without this, every client self-canonicalises to example.co.uk.
@@ -136,7 +136,7 @@ const localBusiness = {
   <body class="bg-white text-ink-900 font-sans antialiased">
     {site.business.isDemo && (
       <div class="bg-amber-100 border-b border-amber-300 text-amber-900 text-sm py-2 px-4 text-center">
-        <strong>Demo website</strong> — this is a sample of what your business could have. Not a real business.
+        <strong>Demo website.</strong> This is a sample of what your business could have, not a real business.
       </div>
     )}
     <slot />
