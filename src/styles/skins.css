@@ -1,0 +1,19 @@
+/* Per-template visual skins.
+   Each block is gated by the `body.skin-<name>` class that BaseLayout adds from
+   `site.theme.style`. Templates opt in via their site.ts + tailwind config
+   (fonts + palette); these rules add the finer treatment on top. Sites with no
+   style keep the default look. */
+
+/* ---------- Restaurant: classy, editorial ---------- */
+body.skin-restaurant {
+  background: #faf7f0;
+}
+.skin-restaurant h1,
+.skin-restaurant h2,
+.skin-restaurant h3,
+.skin-restaurant h4 {
+  letter-spacing: -0.01em;
+}
+.skin-restaurant .font-display {
+  font-feature-settings: "liga" 1, "kern" 1;
+}

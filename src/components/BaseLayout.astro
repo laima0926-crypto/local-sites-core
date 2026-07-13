@@ -1,5 +1,6 @@
 ---
 import type { SiteConfig } from '../schema';
+import '../styles/skins.css';
 interface Props {
   site: SiteConfig;
   title?: string;
@@ -31,6 +32,8 @@ const ogImage = rawOgImage
 // template's tailwind config carries its own colour as the var() fallback, so a
 // site with no theme keeps the template's default palette (no regression).
 const brandVars = Object.entries(site.theme?.brand ?? {}).map(([k, v]) => `--brand-${k}:${v}`).join(';');
+const fontsHref = site.theme?.fontsHref || 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap';
+const skinClass = site.theme?.style ? ` skin-${site.theme.style}` : '';
 
 const SCHEMA_TYPE: Record<string, string> = {
   cleaning: 'LocalBusiness',
@@ -100,10 +103,7 @@ const localBusiness = {
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
-      rel="stylesheet"
-    />
+    <link href={fontsHref} rel="stylesheet" />
 
     <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
 
@@ -135,7 +135,7 @@ const localBusiness = {
       }
     </style>
   </head>
-  <body class="bg-white text-ink-900 font-sans antialiased">
+  <body class={`bg-white text-ink-900 font-sans antialiased${skinClass}`}>
     {site.business.isDemo && (
       <div class="bg-amber-100 border-b border-amber-300 text-amber-900 text-sm py-2 px-4 text-center">
         <strong>Demo website.</strong> This is a sample of what your business could have, not a real business.

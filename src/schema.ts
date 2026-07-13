@@ -72,6 +72,13 @@ export interface SiteConfig {
     // 50–900. Injected as CSS vars by BaseLayout; Tailwind reads them via
     // rgb(var(--brand-600) / <alpha-value>). Omit to use the template default.
     brand?: Record<string, string>;
+    // Optional Google Fonts stylesheet URL, loaded instead of the default
+    // Inter/Plus Jakarta. The template's tailwind config sets the matching
+    // font-family names for font-sans / font-display.
+    fontsHref?: string;
+    // Per-template visual skin name, added to <body> as `skin-<style>` so core
+    // CSS can apply tailored treatments. Omit for the default look.
+    style?: string;
   };
   business: {
     name: string;
