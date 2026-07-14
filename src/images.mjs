@@ -50,7 +50,12 @@ function parseAttrs(tag) {
 }
 
 async function makeVariants(sharp, distDir, src, widths) {
-  const abs = path.join(distDir, src);
+  // src comes from rendered HTML and may be URL-encoded ("download%20(4).jpeg")
+  // while the file on disk has the raw name. Decode for filesystem access,
+  // re-encode when emitting URLs.
+  let decoded;
+  try { decoded = decodeURI(src); } catch { decoded = src; }
+  const abs = path.join(distDir, decoded);
   if (!fs.existsSync(abs)) return null;
   const image = sharp(abs).rotate(); // respect EXIF orientation (phone photos)
   const meta = await image.metadata();
@@ -61,11 +66,17 @@ async function makeVariants(sharp, distDir, src, widths) {
   if (!fullW || !fullH) return null;
 
   const targets = [...new Set(widths.map((w) => Math.min(w, fullW)))].sort((a, b) => a - b);
-  const parsed = path.parse(src);
+  const parsed = path.parse(decoded);
+  // Variant filenames are slugged so emitted URLs never need spaces/parens.
+  let slug = parsed.name.toLowerCase().replace(/[^a-z0-9._-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '') || 'img';
+  const slugKey = parsed.dir + '/' + slug;
+  const owner = makeVariants.slugs.get(slugKey);
+  if (owner && owner !== src) slug += '-' + (makeVariants.slugs.size + 1); // distinct files, same slug
+  makeVariants.slugs.set(slugKey, src);
   const variants = [];
   for (const w of targets) {
-    // Root-absolute URL path, e.g. /images/opt/IMG_1-480.webp
-    const rel = path.posix.join(parsed.dir, 'opt', `${parsed.name}-${w}.webp`);
+    // Root-absolute URL path, e.g. /images/opt/img-1-480.webp
+    const rel = path.posix.join(parsed.dir, 'opt', `${slug}-${w}.webp`);
     if (!rel.startsWith('/')) throw new Error(`unexpected variant path: ${rel}`);
     const outAbs = path.join(distDir, rel);
     fs.mkdirSync(path.dirname(outAbs), { recursive: true });
@@ -74,8 +85,9 @@ async function makeVariants(sharp, distDir, src, widths) {
   }
   const largest = variants[variants.length - 1];
   const displayH = Math.round((largest.width / fullW) * fullH);
-  return { variants, width: largest.width, height: displayH };
+  return { variants, width: largest.width, height: displayH, orig: abs };
 }
+makeVariants.slugs = new Map();
 
 export async function optimizeDist(distDir, logger = console) {
   // Resolve sharp from the SITE's node_modules (Astro depends on it), not from
@@ -130,9 +142,9 @@ export async function optimizeDist(distDir, logger = console) {
   }
 
   let saved = 0;
-  for (const [src, info] of cache) {
+  for (const info of cache.values()) {
     if (!info) continue;
-    const orig = fs.statSync(path.join(distDir, src)).size;
+    const orig = fs.statSync(info.orig).size;
     const best = fs.statSync(path.join(distDir, info.variants[info.variants.length - 1].rel)).size;
     saved += Math.max(0, orig - best);
   }
