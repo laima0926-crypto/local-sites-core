@@ -20,6 +20,12 @@ body.skin-restaurant {
 .skin-restaurant .font-display {
   font-feature-settings: "liga" 1, "kern" 1;
 }
+/* Elegant serif weight everywhere: extrabold Playfair reads heavy, not classy.
+   (Outranks the font-extrabold/tracking-tight utilities via the longer selector.) */
+body.skin-restaurant :is(h1, h2, h3).font-display {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
 
 /* Square-ish editorial shapes: buttons lose the pill, cards lose the bubble. */
 body.skin-restaurant :is(a, button).rounded-full {
