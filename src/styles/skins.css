@@ -84,3 +84,34 @@ body.skin-pet .demo-banner {
   color: #8f2653;
   border-color: #f7ccde;
 }
+
+/* ---------- Trades: professional, serious, dependable ---------- */
+body.skin-trades {
+  background: #f4f6f8;
+}
+
+/* Blocky, workmanlike shapes. */
+body.skin-trades :is(a, button).rounded-full {
+  border-radius: 4px;
+}
+body.skin-trades .rounded-3xl,
+body.skin-trades .rounded-2xl,
+body.skin-trades .rounded-xl {
+  border-radius: 8px;
+}
+body.skin-trades .rounded-lg {
+  border-radius: 6px;
+}
+
+/* Header: solid, trustworthy; strong navy keel line. */
+body.skin-trades header.sticky {
+  background: rgba(255, 255, 255, 0.97);
+  border-bottom: 2px solid #162c44;
+}
+
+/* Demo banner: navy with hi-vis text; unmistakable. */
+body.skin-trades .demo-banner {
+  background: #162c44;
+  color: #fde68a;
+  border-color: #f5a300;
+}
