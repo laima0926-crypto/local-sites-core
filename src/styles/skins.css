@@ -192,3 +192,30 @@ body.skin-repair .demo-banner {
   color: #7de7f5;
   border-color: rgba(34, 211, 238, 0.4);
 }
+
+/* ---------- Cleaning: crisp, airy, spotless ---------- */
+body.skin-cleaning {
+  background: #f7fbfd;
+}
+
+/* Neat, tidy shapes: crisp but not sharp. */
+body.skin-cleaning .rounded-3xl,
+body.skin-cleaning .rounded-2xl {
+  border-radius: 14px;
+}
+body.skin-cleaning .rounded-xl {
+  border-radius: 12px;
+}
+
+/* Header: bright glass with a fresh sky hairline. */
+body.skin-cleaning header.sticky {
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom-color: rgba(2, 132, 199, 0.16);
+}
+
+/* Demo banner: fresh sky, deep sea text. */
+body.skin-cleaning .demo-banner {
+  background: #e0f2fe;
+  color: #0c4a6e;
+  border-color: #bae6fd;
+}
