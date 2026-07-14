@@ -2,7 +2,10 @@
    Each block is gated by the `body.skin-<name>` class that BaseLayout adds from
    `site.theme.style`. Templates opt in via their site.ts + tailwind config
    (fonts + palette); these rules add the finer treatment on top. Sites with no
-   style keep the default look. */
+   style keep the default look untouched.
+
+   Shape language: rules deliberately target only INTERACTIVE pills
+   (:is(a,button).rounded-full) so decorative dots/avatars stay circular. */
 
 /* ---------- Restaurant: classy, editorial ---------- */
 body.skin-restaurant {
@@ -16,4 +19,33 @@ body.skin-restaurant {
 }
 .skin-restaurant .font-display {
   font-feature-settings: "liga" 1, "kern" 1;
+}
+
+/* Square-ish editorial shapes: buttons lose the pill, cards lose the bubble. */
+body.skin-restaurant :is(a, button).rounded-full {
+  border-radius: 6px;
+}
+body.skin-restaurant .rounded-3xl,
+body.skin-restaurant .rounded-2xl,
+body.skin-restaurant .rounded-xl {
+  border-radius: 6px;
+}
+body.skin-restaurant .rounded-lg {
+  border-radius: 5px;
+}
+
+/* Header: warm cream glass with a gold hairline; gold wordmark sparkle. */
+body.skin-restaurant header.sticky {
+  background: rgba(250, 247, 240, 0.94);
+  border-bottom-color: rgba(184, 134, 47, 0.35);
+}
+body.skin-restaurant header.sticky .text-brand-600 {
+  color: #b8862f;
+}
+
+/* Demo banner: stays prominent, but in the room's palette (deep green + gold). */
+body.skin-restaurant .demo-banner {
+  background: #18392b;
+  color: #f1e8d2;
+  border-color: #b8862f;
 }
