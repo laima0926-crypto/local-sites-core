@@ -161,3 +161,34 @@ body.skin-gardener .demo-banner {
   color: #ecfccb;
   border-color: #65a30d;
 }
+
+/* ---------- Repair: dark, technical, precise ---------- */
+body.skin-repair {
+  background: #0d1218;
+  color-scheme: dark;
+}
+
+/* Crisp technical shapes. */
+body.skin-repair :is(a, button).rounded-full {
+  border-radius: 8px;
+}
+body.skin-repair .rounded-3xl,
+body.skin-repair .rounded-2xl,
+body.skin-repair .rounded-xl {
+  border-radius: 10px;
+}
+body.skin-repair .rounded-lg {
+  border-radius: 8px;
+}
+
+/* Header: dark glass with a faint cyan seam. */
+body.skin-repair header.sticky {
+  border-bottom-color: rgba(34, 211, 238, 0.16);
+}
+
+/* Demo banner: near-black with luminous cyan text. */
+body.skin-repair .demo-banner {
+  background: #0a0f14;
+  color: #7de7f5;
+  border-color: rgba(34, 211, 238, 0.4);
+}
