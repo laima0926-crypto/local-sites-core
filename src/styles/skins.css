@@ -115,3 +115,16 @@ body.skin-trades .demo-banner {
   color: #fde68a;
   border-color: #f5a300;
 }
+
+/* Denser vertical rhythm: trades reads busy and to-the-point, not airy.
+   (Outranks the py-20/md:py-24 utilities via the longer selector.) */
+body.skin-trades main > section {
+  padding-top: 3.5rem;
+  padding-bottom: 3.5rem;
+}
+@media (min-width: 768px) {
+  body.skin-trades main > section {
+    padding-top: 4.25rem;
+    padding-bottom: 4.25rem;
+  }
+}
