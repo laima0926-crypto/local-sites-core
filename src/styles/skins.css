@@ -49,3 +49,38 @@ body.skin-restaurant .demo-banner {
   color: #f1e8d2;
   border-color: #b8862f;
 }
+
+/* ---------- Pet grooming: friendly, cute, soft ---------- */
+body.skin-pet {
+  background: #fef9f7;
+}
+.skin-pet h1,
+.skin-pet h2,
+.skin-pet h3 {
+  letter-spacing: 0;
+}
+
+/* Extra-soft shapes: pills stay pills; cards and images get rounder. */
+body.skin-pet .rounded-3xl,
+body.skin-pet .rounded-2xl {
+  border-radius: 26px;
+}
+body.skin-pet .rounded-xl {
+  border-radius: 20px;
+}
+body.skin-pet .rounded-lg {
+  border-radius: 14px;
+}
+
+/* Header: blush glass with a soft pink hairline. */
+body.skin-pet header.sticky {
+  background: rgba(254, 249, 247, 0.92);
+  border-bottom-color: rgba(209, 63, 123, 0.16);
+}
+
+/* Demo banner: soft blush, deep berry text; still clearly visible. */
+body.skin-pet .demo-banner {
+  background: #fbe5ee;
+  color: #8f2653;
+  border-color: #f7ccde;
+}
