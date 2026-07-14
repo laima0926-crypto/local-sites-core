@@ -128,3 +128,9 @@ body.skin-trades main > section {
     padding-bottom: 3rem;
   }
 }
+
+/* No flat-white section fields: let the steel-grey ground show through so
+   white cards carry the contrast. (The navy hero keeps its own background.) */
+body.skin-trades main > section.bg-white {
+  background-color: transparent;
+}
