@@ -5,7 +5,16 @@
 // Never fabricate insurance amounts, review counts, certifications, or FAQ answers.
 // Omit a field rather than invent it — components hide sections that have no data.
 
-export type BusinessType = 'cleaning' | 'gardener' | 'pet' | 'restaurant' | 'repair' | 'trades';
+export type BusinessType =
+  | 'cleaning'
+  | 'gardener'
+  | 'pet'
+  | 'restaurant'
+  | 'repair'
+  | 'trades'
+  // Showcase-only: photography / art studios. Not offered through the intake
+  // form yet, so no generator mapping exists for it.
+  | 'creative';
 
 export interface Service {
   slug?: string;
