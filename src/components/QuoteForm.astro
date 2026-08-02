@@ -8,11 +8,20 @@ interface Props {
 const { site } = Astro.props;
 const bt = site.businessType;
 const isRestaurant = bt === 'restaurant';
-const formHeading = isRestaurant ? 'Send us a message' : 'Get a free quote';
+const isCreative = bt === 'creative';
+const formHeading = isRestaurant ? 'Send us a message' : isCreative ? 'Tell us about it' : 'Get a free quote';
 const formSubtitle = isRestaurant
   ? 'Booking enquiries or any questions welcome. Send us a message and we\'ll get back to you.'
-  : 'Send us the details and we\'ll get back to you.';
-const messageLabel = isRestaurant ? 'Your message' : bt === 'pet' ? 'Tell us about your pet' : 'Tell us about the job';
+  : isCreative
+    ? 'A few lines is plenty. We\'ll come back with availability and a price.'
+    : 'Send us the details and we\'ll get back to you.';
+const messageLabel = isRestaurant
+  ? 'Your message'
+  : bt === 'pet'
+    ? 'Tell us about your pet'
+    : isCreative
+      ? 'About the project'
+      : 'Tell us about the job';
 // Placeholder hint tailored to each business type (these are just input hints).
 const PLACEHOLDERS: Record<string, string> = {
   restaurant: 'Party size, dietary requirements, or anything else…',
@@ -21,6 +30,7 @@ const PLACEHOLDERS: Record<string, string> = {
   gardener: 'Your garden, what needs doing, and access details…',
   repair: 'The device or appliance, the make, and what\'s gone wrong…',
   trades: 'The job, where it is, and when suits you…',
+  creative: 'What it is, roughly when, and where…',
 };
 const messagePlaceholder = PLACEHOLDERS[bt] || 'Tell us what you need and any details that help us help you…';
 // The form emails the business's own public inbox. With no public email there's
