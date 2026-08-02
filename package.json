@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     "./schema": "./src/schema.ts",
+    "./obfuscate": "./src/obfuscate.ts",
     "./images": "./src/images.mjs",
     "./components/*": "./src/components/*"
   },

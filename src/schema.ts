@@ -14,7 +14,16 @@ export type BusinessType =
   | 'trades'
   // Showcase-only: photography / art studios. Not offered through the intake
   // form yet, so no generator mapping exists for it.
-  | 'creative';
+  | 'creative'
+  // Any local business that is none of the six named trades. Offered through
+  // the intake form as "Something else (my business isn't listed)" and built
+  // from template-flexible.
+  | 'flexible'
+  // Car garages, servicing, MOT and custom shops. Offered through the intake
+  // form as "Car garage, servicing or custom shop" and built from
+  // template-automotive. The only template whose hero is a looping video
+  // rather than a photo, though it renders correctly without one.
+  | 'automotive';
 
 export interface Service {
   slug?: string;
@@ -102,6 +111,14 @@ export interface SiteConfig {
     heroHeadlineAccent?: string; // second line, shown in the brand colour
     heroImage?: string; // hero photo URL
     heroImageAlt?: string;
+    // Looping background video for the hero, as a path to an MP4 in the site's
+    // own public/ folder. Optional everywhere: templates that don't use video
+    // ignore it, and a template that does must still render correctly without
+    // it. Always pair it with heroVideoPoster — the poster is what shows while
+    // the video loads, when autoplay is blocked (iOS Low Power Mode), and when
+    // the visitor has asked for reduced motion.
+    heroVideo?: string;
+    heroVideoPoster?: string;
   };
   contact: {
     phone: string; // E.164 for tel: links

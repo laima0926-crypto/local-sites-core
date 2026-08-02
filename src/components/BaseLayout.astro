@@ -43,6 +43,11 @@ const SCHEMA_TYPE: Record<string, string> = {
   repair: 'LocalBusiness',
   trades: 'HomeAndConstructionBusiness',
   creative: 'ProfessionalService',
+  // Flexible covers any local business, so the broadest type is the honest one.
+  flexible: 'LocalBusiness',
+  // schema.org has a dedicated type for garages. Use it rather than the generic
+  // LocalBusiness so search engines read the demo correctly.
+  automotive: 'AutoRepair',
 };
 const schemaType = SCHEMA_TYPE[site.businessType] || 'LocalBusiness';
 
