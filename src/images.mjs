@@ -41,12 +41,26 @@ function walkHtml(dir, out = []) {
   return out;
 }
 
-function parseAttrs(tag) {
+export function parseAttrs(tag) {
   const attrs = new Map();
-  const re = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)\s*=\s*"([^"]*)"/g;
+  // Drop the tag name first, so it isn't read as a valueless attribute.
+  const body = tag.replace(/^<[a-zA-Z][-a-zA-Z0-9]*/, '');
+  // Quoted values AND valueless attributes. Astro writes its scoped-style
+  // marker bare (data-astro-cid-xxxx, no ="..."), so a value-only parser drops
+  // it when the tag is rebuilt — which silently kills every scoped CSS rule
+  // that targets an <img>, e.g. the hero's object-fit cover.
+  // A valueless attribute is stored as undefined and re-emitted bare.
+  const re = /([a-zA-Z_:][-a-zA-Z0-9_:.]*)(?:\s*=\s*"([^"]*)")?/g;
   let m;
-  while ((m = re.exec(tag))) attrs.set(m[1], m[2]);
+  while ((m = re.exec(body))) attrs.set(m[1], m[2]);
   return attrs;
+}
+
+// Rebuild an <img> from a parsed attribute map. Valueless attributes are stored
+// as undefined and must go back out bare, not as name="undefined".
+export function rebuildImgTag(attrs) {
+  return '<img ' + [...attrs.entries()]
+    .map(([k, v]) => (v === undefined ? k : `${k}="${v}"`)).join(' ') + '>';
 }
 
 async function makeVariants(sharp, distDir, src, widths) {
@@ -134,7 +148,7 @@ export async function optimizeDist(distDir, logger = console) {
       if (!attrs.has('loading')) attrs.set('loading', 'lazy');
       if (!attrs.has('decoding')) attrs.set('decoding', 'async');
 
-      const rebuilt = '<img ' + [...attrs.entries()].map(([k, v]) => `${k}="${v}"`).join(' ') + '>';
+      const rebuilt = rebuildImgTag(attrs);
       html = html.split(tag).join(rebuilt);
       rewritten++;
     }
