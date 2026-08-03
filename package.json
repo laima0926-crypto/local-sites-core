@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Shared Astro components and content schema for createmywebsite.co.uk templates.",
   "type": "module",
+  "scripts": {
+    "test": "node --test \"src/**/*.test.mjs\""
+  },
   "exports": {
     "./schema": "./src/schema.ts",
     "./obfuscate": "./src/obfuscate.ts",
