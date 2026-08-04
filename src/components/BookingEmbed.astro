@@ -1,0 +1,177 @@
+---
+// The customer's OWN booking system, carried on their site. PAID ADD-ON.
+//
+// Two rules shape this component, and both are deliberate:
+//
+// 1. CLICK TO LOAD. The widget does not load on page view. It loads when the visitor
+//    presses the button. That is what makes the cookie position honest (UK PECR wants
+//    consent BEFORE non-essential cookies are set, and a widget that loads on arrival
+//    sets the booking company's cookies before anyone agreed to anything). It also
+//    keeps third-party code off first load, which protects the Lighthouse >=95 target
+//    the setup fee is sold on.
+//
+// 2. THE FALLBACK NEVER LEAVES. The plain booking link and the phone number are on the
+//    page from the start and stay there after the widget loads. Third-party embeds get
+//    blocked by privacy settings, break, and render badly on phones. There must never
+//    be a blank box where booking should be.
+import type { SiteConfig } from '../schema';
+import Icon from './Icon.astro';
+import { telAttrs } from '../obfuscate';
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+
+const booking = site.booking;
+if (!booking) {
+  throw new Error(
+    'BookingEmbed rendered without site.booking. The /book page should redirect home when it is unset.'
+  );
+}
+
+// The fallback link is not optional. Without it a blocked or broken widget leaves the
+// visitor with nothing, which is the failure this whole component is built to avoid.
+if (!site.reservationUrl) {
+  throw new Error(
+    'site.booking is set but site.reservationUrl is missing. reservationUrl is the visible ' +
+      'fallback link shown when the embed is blocked or fails, so it is required.'
+  );
+}
+
+// Only addresses we have actually tested end to end. An unknown host fails the BUILD, so a
+// typo or a pasted tracking URL never reaches a live site. Add a host here only after
+// testing that platform on a real account.
+const ALLOWED_EMBED_HOSTS = ['widget.treatwell.co.uk'];
+
+let embedHost: string;
+try {
+  const parsed = new URL(booking.src);
+  if (parsed.protocol !== 'https:') {
+    throw new Error(`site.booking.src must be https, got "${parsed.protocol}" in "${booking.src}".`);
+  }
+  embedHost = parsed.host;
+} catch (err) {
+  throw new Error(
+    `site.booking.src is not a usable https URL: "${booking.src}". ${(err as Error).message}`
+  );
+}
+
+if (!ALLOWED_EMBED_HOSTS.includes(embedHost)) {
+  throw new Error(
+    `site.booking.src points at "${embedHost}", which is not on the tested-embed allowlist ` +
+      `(${ALLOWED_EMBED_HOSTS.join(', ')}). Test that platform on a real account first, then ` +
+      `add its host to ALLOWED_EMBED_HOSTS in BookingEmbed.astro.`
+  );
+}
+
+const height = booking.height ?? 700;
+const intro =
+  booking.intro ||
+  `Pick a time that suits you. Booking is handled by ${booking.provider}, the system we already use.`;
+---
+
+<div class="rounded-2xl border border-ink-200 bg-white p-6 md:p-8">
+  <h2 class="font-display text-2xl font-bold text-ink-900 flex items-center gap-2">
+    <Icon name="calendar" class="w-6 h-6 text-brand-600" /> Book with us
+  </h2>
+  <p class="mt-3 text-ink-700 leading-relaxed max-w-2xl">{intro}</p>
+
+  <div class="mt-6 flex flex-wrap items-center gap-3">
+    <button
+      id="booking-open"
+      type="button"
+      data-src={booking.src}
+      data-height={String(height)}
+      data-provider={booking.provider}
+      class="inline-flex items-center gap-2 rounded-full bg-brand-600 hover:bg-brand-700 text-white font-semibold px-7 py-3.5 shadow-md transition-colors"
+    >
+      Open the booking system
+      <span aria-hidden="true">→</span>
+    </button>
+
+    <a
+      href={site.reservationUrl}
+      target="_blank"
+      rel="noopener"
+      class="inline-flex items-center gap-2 rounded-full bg-white hover:bg-ink-50 border border-ink-200 text-ink-800 font-semibold px-6 py-3.5 transition-colors"
+    >
+      Open it in a new tab
+    </a>
+
+    <a
+      href="/contact"
+      {...telAttrs(site.contact.phone, site.contact.phoneDisplay)}
+      class="inline-flex items-center gap-2 text-ink-700 hover:text-brand-700 font-semibold px-2 py-2 transition-colors"
+    >
+      <Icon name="phone" class="w-4 h-4" /> <span data-v>Or call us</span>
+    </a>
+  </div>
+
+  <p class="mt-4 text-xs text-ink-500 max-w-2xl">
+    Opening the booking system loads it from {booking.provider}, who may set cookies on your
+    device to run your booking. Nothing is set unless you open it.
+    <a href="/privacy" class="underline hover:text-ink-700">How we handle your information</a>
+  </p>
+
+  <!--
+    The widget paints in the booking company's own colours, which are almost always light.
+    On the dark templates (repair, creative, automotive) that lands as a bright slab in the
+    middle of a near-black page. Same failure as the gallery lightbox and the Google map.
+    It cannot be restyled from here, so the frame owns it instead: a labelled, inset panel
+    with its own padding and border reads as a deliberate embedded panel rather than a hole
+    in the page.
+  -->
+  <div id="booking-frame" class="mt-6 hidden">
+    <p class="text-xs font-semibold uppercase tracking-wider text-ink-500 mb-2">
+      Booking by {booking.provider}
+    </p>
+    <div class="rounded-xl border border-ink-200 bg-ink-50 p-2">
+      <div class="rounded-lg overflow-hidden bg-white"></div>
+    </div>
+    <p class="mt-3 text-sm text-ink-600">
+      Trouble with the booking system? Use
+      <a href={site.reservationUrl} target="_blank" rel="noopener" class="text-brand-700 font-medium hover:underline">
+        the direct link
+      </a>
+      or give us a call.
+    </p>
+  </div>
+</div>
+
+<script>
+  const openBtn = document.getElementById('booking-open') as HTMLButtonElement | null;
+  const wrap = document.getElementById('booking-frame');
+  // The inner panel, not the outer padded frame.
+  const holder = wrap?.querySelector('div > div');
+
+  if (openBtn && wrap && holder) {
+    openBtn.addEventListener('click', () => {
+      // Guard against a double click creating two iframes.
+      if (holder.querySelector('iframe')) return;
+
+      const src = openBtn.dataset.src || '';
+      const height = Number(openBtn.dataset.height || '700');
+      const provider = openBtn.dataset.provider || 'our booking system';
+
+      const frame = document.createElement('iframe');
+      frame.src = src;
+      frame.title = `Book with ${provider}`;
+      frame.loading = 'lazy';
+      frame.width = '100%';
+      frame.height = String(height);
+      frame.style.border = '0';
+      frame.style.display = 'block';
+      frame.style.width = '100%';
+
+      holder.appendChild(frame);
+      wrap.classList.remove('hidden');
+
+      // The button has done its job. The fallback link and phone number deliberately stay.
+      openBtn.disabled = true;
+      openBtn.textContent = 'Booking system opened below';
+      openBtn.classList.add('opacity-60', 'cursor-default');
+
+      wrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+</script>

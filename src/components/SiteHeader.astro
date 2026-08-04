@@ -1,5 +1,6 @@
 ---
 import type { SiteConfig } from '../schema';
+import { bookingLink } from '../schema';
 import Icon from './Icon.astro';
 import { telAttrs } from '../obfuscate';
 interface Props {
@@ -13,6 +14,8 @@ const isRestaurant = site.businessType === 'restaurant';
 // the page redirects home — so don't link to it from the nav.
 const hasGalleryPage = site.gallery.length > 0 || site.beforeAfter.length > 0;
 
+const book = bookingLink(site);
+
 // `external: true` items are absolute URLs off this site — they open in a new tab and can
 // never match the active-page check below. Both the desktop and the mobile loop read it.
 const nav: { href: string; label: string; external?: boolean }[] = [
@@ -20,8 +23,9 @@ const nav: { href: string; label: string; external?: boolean }[] = [
   isRestaurant ? { href: '/menu', label: 'Menu' } : { href: '/services', label: 'Services' },
   ...(hasGalleryPage ? [{ href: '/gallery', label: 'Gallery' }] : []),
   // The customer's own booking system, for every business type. Only appears when they
-  // actually have one.
-  ...(site.reservationUrl ? [{ href: site.reservationUrl, label: 'Book', external: true }] : []),
+  // actually have one. Paid sites point at /book (the embed); free sites go straight to
+  // the booking company.
+  ...(book ? [{ href: book.href, label: 'Book', external: book.external }] : []),
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];

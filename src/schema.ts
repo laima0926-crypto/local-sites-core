@@ -199,3 +199,19 @@ export interface SiteConfig {
   };
   delivery?: DeliveryLink[];
 }
+
+/**
+ * Where the site's "Book" links should point, and whether that is off-site.
+ *
+ * One rule in one place, because four things ask the same question: the header nav,
+ * every template's hero, the footer and the contact card. Paid sites keep the visitor
+ * on the site (/book carries the embed); free sites hand them to the booking company.
+ *
+ * Returns null when the customer has no booking system at all, which is the signal to
+ * render nothing rather than an empty link.
+ */
+export function bookingLink(site: SiteConfig): { href: string; external: boolean } | null {
+  if (site.booking) return { href: '/book', external: false };
+  if (site.reservationUrl) return { href: site.reservationUrl, external: true };
+  return null;
+}

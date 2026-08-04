@@ -1,5 +1,6 @@
 ---
 import type { SiteConfig } from '../schema';
+import { bookingLink } from '../schema';
 import Icon from './Icon.astro';
 import { telAttrs } from '../obfuscate';
 interface Props {
@@ -30,8 +31,9 @@ else if (yearsTrading >= 2) badges.push(`${yearsTrading}+ years`);
 const primaryLabel = isRestaurant ? 'Get in touch' : 'Get a free quote';
 const primaryHref = '/contact';
 // The customer's own booking system (Treatwell, Booksy, Fresha…), when they have one.
-// Applies to every business type — not just restaurants.
-const bookingHref = site.reservationUrl;
+// Applies to every business type — not just restaurants. Paid sites keep the visitor here
+// (/book carries the embed); free sites hand them to the booking company.
+const book = bookingLink(site);
 const browseHref = isRestaurant ? '/menu' : '/services';
 const browseLabel = isRestaurant ? 'full menu' : 'full services & prices';
 const cardIcon = isRestaurant ? 'utensils' : 'phone';
@@ -86,11 +88,11 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
           {primaryLabel}
           <span aria-hidden="true">→</span>
         </a>
-        {bookingHref && (
+        {book && (
           <a
-            href={bookingHref}
-            target="_blank"
-            rel="noopener"
+            href={book.href}
+            target={book.external ? '_blank' : undefined}
+            rel={book.external ? 'noopener' : undefined}
             class="inline-flex items-center gap-2 rounded-full bg-white hover:bg-ink-50 border border-ink-200 text-ink-800 font-semibold px-6 py-3.5 transition-colors"
           >
             <Icon name="calendar" class="w-4 h-4" /> Book online
