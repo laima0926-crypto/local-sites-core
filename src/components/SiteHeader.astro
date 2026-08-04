@@ -13,24 +13,31 @@ const isRestaurant = site.businessType === 'restaurant';
 // the page redirects home — so don't link to it from the nav.
 const hasGalleryPage = site.gallery.length > 0 || site.beforeAfter.length > 0;
 
-const nav = [
+// `external: true` items are absolute URLs off this site — they open in a new tab and can
+// never match the active-page check below. Both the desktop and the mobile loop read it.
+const nav: { href: string; label: string; external?: boolean }[] = [
   { href: '/', label: 'Home' },
   isRestaurant ? { href: '/menu', label: 'Menu' } : { href: '/services', label: 'Services' },
   ...(hasGalleryPage ? [{ href: '/gallery', label: 'Gallery' }] : []),
+  // The customer's own booking system, for every business type. Only appears when they
+  // actually have one.
+  ...(site.reservationUrl ? [{ href: site.reservationUrl, label: 'Book', external: true }] : []),
   { href: '/about', label: 'About' },
   { href: '/contact', label: 'Contact' },
 ];
 
 // Bookings/enquiries live on the contact page (which carries optional date/time).
-// Restaurants keep an external reservation link if they have one.
 // "Get a free quote" reads wrong for a creative studio, where the ask is a
 // commission rather than a job priced off a call-out.
+// The header button always goes to the enquiry form. A customer's own booking system gets
+// the `Book` nav item above instead — one button in a sticky header, two is cramped on
+// mobile, and the enquiry form is the action that reaches the owner's inbox.
 const ctaLabel = isRestaurant
   ? 'Get in touch'
   : site.businessType === 'creative'
     ? 'Start a project'
     : 'Get a free quote';
-const ctaHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
+const ctaHref = '/contact';
 
 const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 ---
@@ -45,10 +52,14 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
 
     <nav class="hidden md:flex items-center gap-6 text-sm text-ink-700 font-medium" aria-label="Primary">
       {nav.map((item) => {
-        const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+        const isActive = item.external
+          ? false
+          : item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
         return (
           <a
             href={item.href}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener' : undefined}
             class={`hover:text-brand-700 transition-colors ${isActive ? 'text-brand-700' : ''}`}
             aria-current={isActive ? 'page' : undefined}
           >
@@ -92,10 +103,14 @@ const pathname = Astro.url.pathname.replace(/\/$/, '') || '/';
   <div id="mobile-menu" class="hidden md:hidden border-t border-ink-100 bg-white">
     <nav class="px-5 py-4 flex flex-col gap-1 text-base font-medium" aria-label="Mobile">
       {nav.map((item) => {
-        const isActive = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
+        const isActive = item.external
+          ? false
+          : item.href === '/' ? pathname === '/' : pathname.startsWith(item.href);
         return (
           <a
             href={item.href}
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener' : undefined}
             class={`py-2.5 px-3 rounded-lg hover:bg-ink-50 ${isActive ? 'text-brand-700 bg-brand-50' : 'text-ink-700'}`}
           >
             {item.label}

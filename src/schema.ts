@@ -166,15 +166,13 @@ export interface SiteConfig {
   // Trades
   emergencyCallout?: string; // e.g. "24/7 emergency call-out across Lichfield"
 
-  // Booking (Phase 2 — on-site "request a slot" form; emails the owner, no payment, no availability engine)
-  booking?: {
-    enabled: boolean; // when true: shows /book page, Book nav item, and points the header CTA at it
-    intro?: string; // optional custom intro line; a sensible per-business-type default is used when unset
-  };
-
   // Restaurant
   cuisine?: string; // e.g. "Italian", "Modern British"
-  reservationUrl?: string; // external booking link; falls back to /contact when unset
+  // The customer's OWN booking system (Treatwell, Booksy, Fresha, Calendly…). Used by every
+  // business type, not just restaurants: adds a "Book" nav item, a hero button, a contact-page
+  // card and a footer link, and feeds `acceptsReservations` in the structured data. We never
+  // run the booking — it stays in the customer's account. Unset means none of that renders.
+  reservationUrl?: string;
   menuNote?: string; // shown above the menu, e.g. allergen / dietary note
   menu?: MenuSection[];
   // The customer's own menu file, shown directly when there are no structured
