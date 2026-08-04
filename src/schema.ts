@@ -166,6 +166,20 @@ export interface SiteConfig {
   // Trades
   emergencyCallout?: string; // e.g. "24/7 emergency call-out across Lichfield"
 
+  // The customer's existing booking system, embedded on /book. PAID ADD-ON — the free tier
+  // is `reservationUrl` alone. Requires `reservationUrl`, which is the visible fallback link
+  // when the embed is blocked or fails. Consumed by PrivacyPolicy (cookie wording) and, from
+  // Phase C, by BookingEmbed.
+  //
+  // DO NOT SET THIS UNTIL PHASE C SHIPS. Setting it makes the privacy policy point visitors
+  // at /book, and that page does not exist yet — it would be a dead link on a live site.
+  booking?: {
+    provider: string; // shown to the visitor and named in the privacy policy, e.g. "Treatwell"
+    src: string; // the embed address; checked against an allowlist at build time
+    height?: number; // px, default 700
+    intro?: string; // optional line above the booking card
+  };
+
   // Restaurant
   cuisine?: string; // e.g. "Italian", "Modern British"
   // The customer's OWN booking system (Treatwell, Booksy, Fresha, Calendly…). Used by every
