@@ -1,0 +1,120 @@
+---
+// Privacy policy, generated from the site's own config so it states only what is
+// true for THAT business. Nothing here is boilerplate about features the site
+// does not have: no analytics section (client sites ship none), no advertising,
+// no cookie section unless the site actually embeds a third-party booking system.
+//
+// House rule (same as everywhere else): never claim something the customer has
+// not got. A policy that describes tracking a site does not do is worse than no
+// policy — it is a false statement about how someone's data is handled.
+import type { SiteConfig } from '../schema';
+interface Props {
+  site: SiteConfig;
+}
+const { site } = Astro.props;
+
+const b = site.business;
+const c = site.contact;
+
+// The data controller is the CLIENT business, not us. Their legal name when they
+// gave one, otherwise their trading name.
+const controller = b.legalName || b.name;
+const address = c.addressLines.filter(Boolean).join(', ');
+
+// The only third party that receives enquiry data today. Confirmed in each
+// template's functions/api/contact.ts — the form POSTs there and it calls Resend.
+const EMAIL_PROVIDER = 'Resend';
+
+// Cookies are set ONLY by an embedded booking system, and only after the visitor
+// clicks to load it. No booking embed → this site sets no cookies at all, and the
+// policy must not pretend otherwise.
+const bookingProvider = site.booking?.provider;
+---
+
+<article class="prose-none max-w-3xl space-y-8 text-ink-700 leading-relaxed">
+  <section class="space-y-3">
+    <h2 class="font-display text-2xl font-bold text-ink-900">Who we are</h2>
+    <p>
+      This website belongs to {controller}{address ? `, ${address}` : ''}. We are responsible
+      for any personal information you give us through this site.
+    </p>
+    <p>
+      If you have a question about your information, contact us
+      {c.email ? ' by email or by phone' : ' by phone'} using the details on our
+      <a href="/contact" class="text-brand-700 font-medium hover:underline">contact page</a>.
+    </p>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="font-display text-2xl font-bold text-ink-900">What we collect, and why</h2>
+    <p>
+      When you fill in the enquiry form we collect the details you type into it — typically
+      your name, how to reach you, and what you have asked about. We use them for one thing:
+      to reply to your enquiry and to carry out any work that follows from it.
+    </p>
+    <p>
+      We do not use your details for marketing, we do not sell them, and we do not pass them
+      to anyone who is not helping us answer you.
+    </p>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="font-display text-2xl font-bold text-ink-900">Who else sees it</h2>
+    <p>
+      Your enquiry is delivered to us by email through {EMAIL_PROVIDER}, an email delivery
+      service. They handle the message so it reaches our inbox, and do not use it for
+      anything else.
+    </p>
+    {bookingProvider && (
+      <p>
+        If you choose to open the {bookingProvider} booking system on our
+        <a href="/book" class="text-brand-700 font-medium hover:underline">booking page</a>,
+        anything you enter there goes to {bookingProvider}, not to this website. Their own
+        privacy policy covers it.
+      </p>
+    )}
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="font-display text-2xl font-bold text-ink-900">Cookies</h2>
+    {bookingProvider ? (
+      <>
+        <p>
+          This website itself does not use cookies, and there is no tracking or advertising
+          on it.
+        </p>
+        <p>
+          Our booking page carries {bookingProvider}'s booking system. It does not load
+          until you press the button to open it. If you press it, {bookingProvider} may set
+          cookies on your device to run the booking. If you never press it, nothing is set.
+        </p>
+      </>
+    ) : (
+      <p>
+        This website does not use cookies. There is no tracking, no advertising, and no
+        analytics on it, which is why you have not been asked to accept anything.
+      </p>
+    )}
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="font-display text-2xl font-bold text-ink-900">How long we keep it</h2>
+    <p>
+      We keep enquiries for as long as we need them — to answer you, to do the work, and to
+      keep proper business records afterwards. When we no longer need them, we delete them.
+    </p>
+  </section>
+
+  <section class="space-y-3">
+    <h2 class="font-display text-2xl font-bold text-ink-900">Your rights</h2>
+    <p>
+      You can ask us what information we hold about you, ask us to correct it, or ask us to
+      delete it. Just get in touch and we will sort it out.
+    </p>
+    <p>
+      If you are not happy with how we have handled your information, you can complain to
+      the Information Commissioner's Office at
+      <a href="https://ico.org.uk" target="_blank" rel="noopener" class="text-brand-700 font-medium hover:underline">ico.org.uk</a>.
+    </p>
+  </section>
+</article>

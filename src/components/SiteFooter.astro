@@ -56,7 +56,11 @@ const hasGalleryPage = site.gallery.length > 0 || site.beforeAfter.length > 0;
     </div>
 
     <div class="mt-10 pt-8 border-t border-ink-800 flex flex-col sm:flex-row gap-3 justify-between text-sm">
-      <p>&copy; {year} {site.business.legalName || site.business.name}. All rights reserved.</p>
+      <p>
+        &copy; {year} {site.business.legalName || site.business.name}. All rights reserved.
+        <span class="mx-2 text-ink-600" aria-hidden="true">·</span>
+        <a href="/privacy" class="hover:text-white transition-colors">Privacy</a>
+      </p>
       <p class="text-ink-500">
         Website by <a href="https://createmywebsite.co.uk" class="hover:text-brand-400 transition-colors">createmywebsite.co.uk</a>
       </p>
