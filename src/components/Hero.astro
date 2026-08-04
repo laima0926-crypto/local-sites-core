@@ -24,8 +24,14 @@ if (yearsTrading >= 2 && !site.contact.nationwide && site.contact.serviceAreas[0
 else if (yearsTrading >= 2) badges.push(`${yearsTrading}+ years`);
 
 // Primary action + supporting copy differ for restaurants (book/menu vs quote/services).
+// The enquiry form is always the primary action, for every business type. A customer's
+// existing booking system gets its own button beside it, never instead of it — sending the
+// hero straight to a third-party booking site costs the owner every enquiry email.
 const primaryLabel = isRestaurant ? 'Get in touch' : 'Get a free quote';
-const primaryHref = isRestaurant ? (site.reservationUrl || '/contact') : '/contact';
+const primaryHref = '/contact';
+// The customer's own booking system (Treatwell, Booksy, Fresha…), when they have one.
+// Applies to every business type — not just restaurants.
+const bookingHref = site.reservationUrl;
 const browseHref = isRestaurant ? '/menu' : '/services';
 const browseLabel = isRestaurant ? 'full menu' : 'full services & prices';
 const cardIcon = isRestaurant ? 'utensils' : 'phone';
@@ -80,6 +86,16 @@ const heroImageAlt = site.business.heroImageAlt || site.business.name;
           {primaryLabel}
           <span aria-hidden="true">→</span>
         </a>
+        {bookingHref && (
+          <a
+            href={bookingHref}
+            target="_blank"
+            rel="noopener"
+            class="inline-flex items-center gap-2 rounded-full bg-white hover:bg-ink-50 border border-ink-200 text-ink-800 font-semibold px-6 py-3.5 transition-colors"
+          >
+            <Icon name="calendar" class="w-4 h-4" /> Book online
+          </a>
+        )}
         <a
           href="/contact"
           {...telAttrs(site.contact.phone, site.contact.phoneDisplay)}
