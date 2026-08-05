@@ -39,6 +39,20 @@ const coverage = c.nationwide
 // customer typed in.
 const namedInCoverage = c.nationwide || (!!c.travelRadius && !hasAddress) ? 1 : 0;
 const otherAreas = c.nationwide ? [] : c.serviceAreas.slice(namedInCoverage);
+
+// Premises beyond the first. A business with two shops, or a head office and a
+// workshop, had nowhere to show the others: the coverage line names one place
+// and the footer names one place, so the rest simply did not exist on the site.
+//
+// The first is the main one and is already covered by the line above, so only
+// the rest are listed here. Formatted as printable lines from the parts, which
+// is why the parts are kept.
+const extraLocations = (c.locations ?? []).slice(1).map((l) => ({
+  lines: [
+    [l.line1, l.line2].filter(Boolean).join(', '),
+    [l.town, l.county, l.postcode].filter(Boolean).join(', '),
+  ].filter(Boolean),
+})).filter((l) => l.lines.length > 0);
 ---
 
 <aside class="space-y-5">
@@ -126,6 +140,21 @@ const otherAreas = c.nationwide ? [] : c.serviceAreas.slice(namedInCoverage);
       <p class="mt-3 text-sm text-ink-700 leading-relaxed">
         <span class="font-semibold text-ink-900">Areas covered:</span> {otherAreas.join(', ')}.
       </p>
+    )}
+
+    {extraLocations.length > 0 && (
+      <div class="mt-4 pt-4 border-t border-ink-100">
+        <p class="text-sm font-semibold text-ink-900 mb-2">
+          {extraLocations.length === 1 ? 'We are also here' : 'We are also here'}
+        </p>
+        <ul class="space-y-2">
+          {extraLocations.map((loc) => (
+            <li class="text-sm text-ink-700 leading-relaxed">
+              {loc.lines.map((line) => <span class="block">{line}</span>)}
+            </li>
+          ))}
+        </ul>
+      </div>
     )}
   </div>
   )}
