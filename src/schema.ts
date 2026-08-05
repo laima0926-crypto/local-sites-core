@@ -125,7 +125,31 @@ export interface SiteConfig {
     phoneDisplay: string; // human-readable
     whatsapp?: string;
     email?: string; // public business email — optional; omitted from the site when not provided
+    // What to PRINT. Free-form, however the business writes it.
     addressLines: string[];
+    // The same address BROKEN UP, for anything that needs to know which part is
+    // which. Search engines are the reason it exists.
+    //
+    // The LocalBusiness markup used to work the town out by taking the first
+    // line and cutting at the first comma. For "Lichfield, Staffordshire" that
+    // happens to be right. For "28 Bore Street, Lichfield, WS13 6LL" it told
+    // Google the town was "28 Bore Street", and no amount of comma-counting
+    // fixes that, because the lines are written differently on every site.
+    //
+    // The intake form already collects these as separate fields; they were
+    // being glued into a string and the pieces thrown away. Now they survive.
+    //
+    // A LIST because a business can trade from more than one place. The first
+    // entry is the main one: it is what the footer and the search markup use.
+    // Optional throughout: a site without it falls back to reading addressLines,
+    // which is what every site built before this does.
+    locations?: {
+      line1?: string;
+      line2?: string;
+      town?: string;
+      county?: string;
+      postcode?: string;
+    }[];
     serviceAreas: string[];
     nationwide?: boolean; // covers all of the UK
     travelRadius?: string; // miles they travel for mobile work, e.g. "10". Only when they actually do mobile.

@@ -158,6 +158,36 @@ const BRAND_INK_JS = `
 const fontsHref = site.theme?.fontsHref || 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap';
 const skinClass = site.theme?.style ? ` skin-${site.theme.style}` : '';
 
+// The address as a search engine wants it: each part labelled.
+//
+// THE BUG THIS REPLACES
+// It used to be `addressLines[0].split(',')[0]` reported as the town. That is
+// only ever right by luck. "Lichfield, Staffordshire" gives Lichfield; but
+// "28 Bore Street, Lichfield, WS13 6LL" told Google the town was
+// "28 Bore Street", and "Tamworth Street, Lichfield, Staffordshire" told it
+// "Tamworth Street". Two of the demo sites were doing exactly that.
+//
+// No cleverer comma-counting can fix it, because sites write the line
+// differently. So the parts are used when the site actually has them, and the
+// old guess is kept only as a fallback for sites that predate them.
+const mainLocation = site.contact.locations?.[0];
+const postalAddress = mainLocation
+  ? {
+      '@type': 'PostalAddress',
+      ...(mainLocation.line1 || mainLocation.line2
+        ? { streetAddress: [mainLocation.line1, mainLocation.line2].filter(Boolean).join(', ') }
+        : {}),
+      ...(mainLocation.town ? { addressLocality: mainLocation.town } : {}),
+      ...(mainLocation.county ? { addressRegion: mainLocation.county } : {}),
+      ...(mainLocation.postcode ? { postalCode: mainLocation.postcode } : {}),
+      addressCountry: 'GB',
+    }
+  : {
+      '@type': 'PostalAddress',
+      addressLocality: site.contact.addressLines[0]?.split(',')[0],
+      addressCountry: 'GB',
+    };
+
 const SCHEMA_TYPE: Record<string, string> = {
   cleaning: 'LocalBusiness',
   gardener: 'LocalBusiness',
@@ -187,11 +217,7 @@ const localBusiness = {
   areaServed: site.contact.nationwide
     ? { '@type': 'Country', name: 'United Kingdom' }
     : site.contact.serviceAreas.map((area) => ({ '@type': 'City', name: area })),
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: site.contact.addressLines[0]?.split(',')[0],
-    addressCountry: 'GB',
-  },
+  address: postalAddress,
   ...(site.socials.facebook || site.socials.instagram || site.socials.googleBusinessProfile
     ? {
         sameAs: [site.socials.facebook, site.socials.instagram, site.socials.googleBusinessProfile].filter(Boolean),
