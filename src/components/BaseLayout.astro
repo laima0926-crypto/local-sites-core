@@ -64,9 +64,23 @@ const brandVars = Object.entries(site.theme?.brand ?? {}).map(([k, v]) => `--bra
 // It also only acts on text that is FAILING right now. A band that already
 // reads well is left exactly as its designer built it, tint hierarchy and all.
 //
+// HOW `painted()` DECIDES WHAT IS BEHIND SOMETHING
+// It walks up the ancestors collecting every background layer, then composites
+// them back down. The compositing matters: a header at 90% opacity over a
+// different colour is a real case here, and an earlier version that simply
+// skipped any layer under 95% opaque read straight through a gold header to the
+// raspberry body behind it, decided white text was fine, and left a whole
+// navigation unreadable while reporting a clean pass.
+//
+// It returns null the moment it meets a background IMAGE (a photo, a gradient,
+// a video poster), because there is no single colour behind that text, and
+// guessing one is how you end up blacking out a hero.
+//
 // Runs on themed sites only, so unthemed demos and the templates' own default
 // palettes never execute it. Inline and last in the body: no network request,
-// and it runs before first paint.
+// and it runs before first paint. Note that everything inside the string below
+// is shipped to the visitor, comments included, so the explanation lives out
+// here where it costs them nothing.
 const BRAND_INK_JS = `
 (function () {
   var W = [255, 255, 255], K = [0, 0, 0];
@@ -87,18 +101,10 @@ const BRAND_INK_JS = `
   function flatten(fg, bg, a) {
     return fg.map(function (v, i) { return Math.round(v * a + bg[i] * (1 - a)); });
   }
-  // The colour actually painted behind an element.
-  //
-  // Walks up the ancestors collecting every background layer, then composites
-  // them back down. The compositing matters: a header at 90% opacity over a
-  // different colour is a real case here, and an earlier version that simply
-  // skipped any layer under 95% opaque read straight through a gold header to
-  // the raspberry body behind it, decided white text was fine, and left the
-  // whole navigation unreadable while reporting a clean pass.
-  //
-  // Returns null the moment it meets a background IMAGE — a photo, a gradient,
-  // a video poster — because there is no single colour behind that text, and
-  // guessing one is how you end up blacking out a hero.
+  // The colour actually painted behind an element. Composites translucent
+  // layers; returns null on a background image. See the note above this string
+  // for why both of those matter. (Comments in here ship to every visitor, so
+  // they stay short, and they carry no em dashes: house copy rule.)
   function painted(el) {
     var stack = [];
     function settle(base) {
