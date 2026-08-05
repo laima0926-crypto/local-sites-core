@@ -4,7 +4,52 @@ interface Props {
   site: SiteConfig;
 }
 const { site } = Astro.props;
-const categories = ['All', ...Array.from(new Set(site.gallery.map((g) => g.category).filter(Boolean)))];
+
+// FILTER TABS ARE READ BY VISITORS, SO THEY CAN ONLY CARRY PUBLIC WORDS.
+//
+// `category` on a real site is the section the customer picked for each photo
+// at intake: Hero, Gallery, Team, Premises, Other. That is OUR filing system,
+// for sorting an order. Printed on a finished website it produced tabs reading
+// "All / Gallery / Team / Premises / Other", and most often just
+// "All / Gallery", two buttons showing exactly the same photos.
+//
+// Only sections that name a real subject become tabs, under a name a visitor
+// understands. Everything else keeps its photos; they simply live under "All".
+// Nothing is hidden and no job-type category is invented, because the customer
+// never told us one.
+//
+// Deliberately a block-list, not an allow-list. A demo sets its own categories
+// ("Lawns", "Hedges") and those are already words a visitor understands, so
+// they must keep working. Only the intake section names need handling.
+const NOT_A_SUBJECT = new Set(['Hero', 'Gallery', 'Other']);
+const RENAMED: Record<string, string> = {
+  Team: 'The team',
+  Premises: 'Our place',
+};
+
+/** What a visitor should see for this category, or null if it is filing only. */
+function publicLabel(category?: string): string | null {
+  if (!category || NOT_A_SUBJECT.has(category)) return null;
+  return RENAMED[category] || category;
+}
+
+const present = Array.from(
+  new Set(site.gallery.map((g) => g.category).filter(Boolean) as string[]),
+);
+const realFilters = present.filter((c) => publicLabel(c) !== null);
+const hasUnfiltered = site.gallery.some((g) => publicLabel(g.category) === null);
+
+// A tab bar earns its place only when there are at least two groups to move
+// between. One filter with nothing outside it means "All" and that filter show
+// the same photos, which is the bug this replaces.
+const groupCount = realFilters.length + (hasUnfiltered ? 1 : 0);
+const showFilters = groupCount >= 2;
+
+// `value` drives the match against each photo's data-category; `label` is what
+// the visitor reads.
+const categories = showFilters
+  ? [{ value: 'All', label: 'All' }, ...realFilters.map((c) => ({ value: c, label: publicLabel(c) as string }))]
+  : [];
 const isRestaurant = site.businessType === 'restaurant';
 const galleryHeading = isRestaurant
   ? 'A taste of what we serve'
@@ -33,19 +78,21 @@ const hasGallery = site.gallery.length > 0;
       </p>
     </div>
 
+    {showFilters && (
     <div class="mt-10 flex flex-wrap gap-2" role="tablist" aria-label="Gallery filters">
       {categories.map((cat, i) => (
         <button
           type="button"
-          data-filter={cat}
+          data-filter={cat.value}
           class={`gallery-filter rounded-full px-4 py-2 text-sm font-medium transition-colors ${i === 0 ? 'bg-brand-600 text-white' : 'bg-ink-100 text-ink-700 hover:bg-ink-200'}`}
           role="tab"
           aria-selected={i === 0 ? 'true' : 'false'}
         >
-          {cat}
+          {cat.label}
         </button>
       ))}
     </div>
+    )}
 
     <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3" id="gallery-grid">
       {site.gallery.map((item) => (
@@ -64,9 +111,12 @@ const hasGallery = site.gallery.length > 0;
               loading="lazy"
             />
             <div class="absolute inset-0 bg-gradient-to-t from-ink-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
-            {item.category && (
+            {/* Same rule as the tabs: this badge is read by a visitor, so it
+                only appears for a section that names a real subject. It used to
+                print "Gallery" or "Other" on top of the photo. */}
+            {publicLabel(item.category) && (
               <span class="absolute top-3 left-3 inline-block bg-white/90 backdrop-blur text-ink-800 text-xs font-semibold px-2.5 py-1 rounded-full">
-                {item.category}
+                {publicLabel(item.category)}
               </span>
             )}
           </div>
