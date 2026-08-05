@@ -32,6 +32,116 @@ const ogImage = rawOgImage
 // template's tailwind config carries its own colour as the var() fallback, so a
 // site with no theme keeps the template's default palette (no regression).
 const brandVars = Object.entries(site.theme?.brand ?? {}).map(([k, v]) => `--brand-${k}:${v}`).join(';');
+
+// --- Readable text on the customer's own brand colour ------------------------
+//
+// The shared components write white text on brand-500/600/700: every button,
+// the header call button, the testimonials band, the closing banner. White only
+// reads when the brand colour is dark, and customers pick their own colour from
+// a picker. Measured on live client sites, white text was landing at 2.5:1,
+// 3.4:1 and 3.7:1 against a 4.5:1 bar — a grey, an olive and a teal.
+//
+// Darkening the colour is not the lever. Pushed far enough to carry white text
+// a yellow turns olive, costs the customer their colour, and STILL only reaches
+// 3.3:1. Black on their original yellow reaches 6.4:1. So the colour stays and
+// the ink moves.
+//
+// WHY THIS IS A SCRIPT AND NOT A STYLESHEET
+// The obvious version was pure CSS keyed on the class: `.bg-brand-600` gets the
+// ink the generator computed for brand-600. It was tried, measured, and thrown
+// away, because on most designs the class name does not describe the colour on
+// screen. template-flexible repaints `.bg-brand-600` to near-black for its
+// testimonials band; the bespoke skins repaint more than that. Inking those by
+// class put black text on a near-black band and took one page from two contrast
+// failures to fifteen. Every styled design would have been damaged the same way.
+//
+// So the class is used only to decide WHERE to look — these are the components
+// that carry brand colour, as opposed to a hero sitting on a photograph — and
+// the ink is chosen from the colour actually painted, read back from the
+// browser. A design that repaints the band dark measures dark and keeps its
+// white text untouched.
+//
+// It also only acts on text that is FAILING right now. A band that already
+// reads well is left exactly as its designer built it, tint hierarchy and all.
+//
+// Runs on themed sites only, so unthemed demos and the templates' own default
+// palettes never execute it. Inline and last in the body: no network request,
+// and it runs before first paint.
+const BRAND_INK_JS = `
+(function () {
+  var W = [255, 255, 255], K = [0, 0, 0];
+  function chan(s) {
+    var m = String(s).match(/rgba?\\(([^)]+)\\)/);
+    if (!m) return null;
+    var p = m[1].split(/[,\\/\\s]+/).filter(Boolean).map(Number);
+    return { rgb: p.slice(0, 3), a: p.length > 3 ? p[3] : 1 };
+  }
+  function lum(c) {
+    var a = c.map(function (v) { v = v / 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); });
+    return 0.2126 * a[0] + 0.7152 * a[1] + 0.0722 * a[2];
+  }
+  function ratio(a, b) {
+    var x = lum(a), y = lum(b), hi = Math.max(x, y), lo = Math.min(x, y);
+    return (hi + 0.05) / (lo + 0.05);
+  }
+  function flatten(fg, bg, a) {
+    return fg.map(function (v, i) { return Math.round(v * a + bg[i] * (1 - a)); });
+  }
+  // The colour actually painted behind an element.
+  //
+  // Walks up the ancestors collecting every background layer, then composites
+  // them back down. The compositing matters: a header at 90% opacity over a
+  // different colour is a real case here, and an earlier version that simply
+  // skipped any layer under 95% opaque read straight through a gold header to
+  // the raspberry body behind it, decided white text was fine, and left the
+  // whole navigation unreadable while reporting a clean pass.
+  //
+  // Returns null the moment it meets a background IMAGE — a photo, a gradient,
+  // a video poster — because there is no single colour behind that text, and
+  // guessing one is how you end up blacking out a hero.
+  function painted(el) {
+    var stack = [];
+    function settle(base) {
+      for (var i = stack.length - 1; i >= 0; i--) base = flatten(stack[i].rgb, base, stack[i].a);
+      return base;
+    }
+    for (var n = el; n && n.nodeType === 1; n = n.parentElement) {
+      var cs = getComputedStyle(n);
+      if (cs.backgroundImage && cs.backgroundImage !== 'none') return null;
+      var c = chan(cs.backgroundColor);
+      if (!c || c.a === 0) continue;
+      if (c.a >= 0.999) return settle(c.rgb);
+      stack.push(c);
+    }
+    return settle(W);
+  }
+  var hosts = document.querySelectorAll('[class*="bg-brand-"]');
+  Array.prototype.forEach.call(hosts, function (host) {
+    if (!painted(host)) return; // host sits on an image: nothing reliable to measure
+    // The host itself plus everything under it that carries its own text.
+    var els = [host].concat(Array.prototype.slice.call(host.querySelectorAll('*')));
+    els.forEach(function (el) {
+      var own = '';
+      for (var i = 0; i < el.childNodes.length; i++) {
+        if (el.childNodes[i].nodeType === 3) own += el.childNodes[i].textContent;
+      }
+      if (!own.trim()) return;
+      var cs = getComputedStyle(el);
+      if (cs.visibility === 'hidden' || cs.display === 'none') return;
+      // Re-measure per element: a white card can sit inside a brand band.
+      var here = painted(el);
+      if (!here) return;
+      var f = chan(cs.color);
+      if (!f) return;
+      var fg = f.a < 1 ? flatten(f.rgb, here, f.a) : f.rgb;
+      var size = parseFloat(cs.fontSize), bold = parseInt(cs.fontWeight, 10) >= 700;
+      var bar = (size >= 24 || (size >= 18.66 && bold)) ? 3 : 4.5;
+      if (ratio(fg, here) >= bar) return; // already readable: leave the design alone
+      var best = ratio(here, W) >= ratio(here, K) ? W : K;
+      el.style.color = 'rgb(' + best.join(',') + ')';
+    });
+  });
+})();`;
 const fontsHref = site.theme?.fontsHref || 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap';
 const skinClass = site.theme?.style ? ` skin-${site.theme.style}` : '';
 
@@ -184,5 +294,6 @@ const localBusiness = {
         });
       })();
     </script>
+    {brandVars && <script is:inline set:html={BRAND_INK_JS}></script>}
   </body>
 </html>
