@@ -141,6 +141,13 @@ const BRAND_INK_JS = `
       el.style.color = 'rgb(' + best.join(',') + ')';
     });
   });
+  // NOTE ON GRADIENTS. Text sitting on a gradient is skipped above, because
+  // there is no single colour behind it to measure. A special case for the
+  // gradient button in core's own Hero was written, then removed: none of the
+  // templates render that button (each has its own hero), so the only thing the
+  // rule ever matched was a decorative full-bleed background wash, which it
+  // flattened. If a template ever does put text on a brand gradient, it needs
+  // handling here deliberately rather than by a catch-all.
 })();`;
 const fontsHref = site.theme?.fontsHref || 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap';
 const skinClass = site.theme?.style ? ` skin-${site.theme.style}` : '';
