@@ -24,6 +24,21 @@ const coverage = c.nationwide
         : c.serviceAreas[0]
           ? `Covering ${c.serviceAreas[0]}.`
           : '';
+
+// The towns they actually cover, named, on the page where somebody is deciding
+// whether to get in touch.
+//
+// The coverage line above says "within 15 miles", which is only useful to a
+// reader who already knows how far away they live. The towns themselves were
+// listed on the homepage and the About page but NOT here, which is the one page
+// a person visits to answer "do you come to me?".
+//
+// The first area is skipped when it is already named in the line above, so a
+// mobile business does not read "within 15 miles of Lichfield. Also covering
+// Lichfield, Tamworth". Nothing is invented: this only ever lists towns the
+// customer typed in.
+const namedInCoverage = c.nationwide || (!!c.travelRadius && !hasAddress) ? 1 : 0;
+const otherAreas = c.nationwide ? [] : c.serviceAreas.slice(namedInCoverage);
 ---
 
 <aside class="space-y-5">
@@ -107,6 +122,11 @@ const coverage = c.nationwide
     <p class="text-sm text-ink-700 leading-relaxed">
       {coverage}
     </p>
+    {otherAreas.length > 0 && (
+      <p class="mt-3 text-sm text-ink-700 leading-relaxed">
+        <span class="font-semibold text-ink-900">Areas covered:</span> {otherAreas.join(', ')}.
+      </p>
+    )}
   </div>
   )}
 </aside>
