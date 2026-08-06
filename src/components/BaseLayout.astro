@@ -31,7 +31,39 @@ const ogImage = rawOgImage
 // Brand colour scale → CSS variables, ONLY when the client has a theme. Each
 // template's tailwind config carries its own colour as the var() fallback, so a
 // site with no theme keeps the template's default palette (no regression).
-const brandVars = Object.entries(site.theme?.brand ?? {}).map(([k, v]) => `--brand-${k}:${v}`).join(';');
+const brandEntries = Object.entries(site.theme?.brand ?? {});
+
+// WHAT COLOUR OF TEXT SITS ON THE CUSTOMER'S ACCENT.
+//
+// A design cannot hardcode this, and every design needs it. The gym design
+// paints slabs of its accent and puts BLACK type on them, which measures about
+// 17:1 on acid green and would be unreadable on a dark crimson. The moment a
+// design stops hardcoding its accent, "black on the accent" stops being safe.
+//
+// So core works it out once, from the accent it was actually given, and hands
+// designs a variable to use instead of a guess. Designs write
+// `color: rgb(var(--brand-on))` on anything sitting on `bg-brand-600`.
+//
+// Near-black rather than pure black, matching the ink ramp the templates use,
+// so an accent that wants dark type does not get a harsher black than the rest
+// of the page.
+const brand600 = (site.theme?.brand as Record<string, string> | undefined)?.['600'] ?? '';
+const [br, bg, bb] = brand600.split(/\s+/).map(Number);
+const channel = (c: number) => {
+  const x = (c || 0) / 255;
+  return x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4);
+};
+const relLuminance = 0.2126 * channel(br) + 0.7152 * channel(bg) + 0.0722 * channel(bb);
+const contrastWith = (l: number) => (Math.max(relLuminance, l) + 0.05) / (Math.min(relLuminance, l) + 0.05);
+// 0.0075 is the luminance of #0c0c0c, the near-black the ink ramp bottoms out at.
+const brandOn = Number.isFinite(relLuminance) && brand600
+  ? (contrastWith(0.0075) >= contrastWith(1) ? '12 12 12' : '255 255 255')
+  : '';
+
+const brandVars = [
+  ...brandEntries.map(([k, v]) => `--brand-${k}:${v}`),
+  ...(brandOn ? [`--brand-on:${brandOn}`] : []),
+].join(';');
 
 // STRUCTURED DATA MUST NOT BE ABLE TO END ITS OWN SCRIPT TAG.
 //
