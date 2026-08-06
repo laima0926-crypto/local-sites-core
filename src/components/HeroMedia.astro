@@ -1,0 +1,86 @@
+---
+// The hero's picture, or the customer's own looping clip where they sent one.
+//
+// WHY THIS EXISTS
+// Only template-automotive could show a video. Every other design ignored
+// `heroVideo` entirely, so a customer who sent us footage got nothing unless
+// they had also chosen the garage look. A design is only a look: what a
+// business can put on its site must not depend on which one they picked. Same
+// reasoning as booking pages, which every design now has.
+//
+// ONE ELEMENT, NOT TWO
+// It renders EITHER a video OR an image, never both stacked. Heroes lay their
+// media out very differently — some absolutely positioned and full-bleed, some
+// a side panel in normal flow — and two stacked elements would break the ones
+// in normal flow. The <video> tag's own `poster` attribute covers the job the
+// second element would have done: it shows while the file downloads, if
+// autoplay is refused, and if the visitor asked for reduced motion.
+//
+// So a hero swaps its <img> for this and keeps its own layout and classes.
+//
+// NEVER A STOCK CLIP. `video` comes from the order or it is absent. Putting
+// footage of somebody else's premises on a paying customer's site is the
+// no-invented-content rule, and it is what this component was written after.
+interface Props {
+  /** The customer's own clip. Absent means the picture is used instead. */
+  video?: string;
+  /** The still. Used as the video's poster frame, or on its own. */
+  poster?: string;
+  /** Describes the still for a screen reader. Ignored for video, which is decoration. */
+  alt: string;
+  /** The hero's own classes, so the media sits exactly where the picture did. */
+  class?: string;
+  /** Above the fold by default; pass false for a hero further down a page. */
+  eager?: boolean;
+  /** Passed through where a hero sets explicit dimensions to reserve space. */
+  width?: number;
+  height?: number;
+  /** The hero image is usually the largest thing above the fold, so it is
+      fetched at high priority by default. Ignored for video, which already
+      loads its poster first and its data lazily. */
+  fetchpriority?: 'high' | 'low' | 'auto';
+}
+const { video, poster, alt, class: cls = '', eager = true, width, height, fetchpriority = 'high' } = Astro.props;
+---
+
+{video ? (
+  <video
+    data-hero-video
+    class={cls}
+    src={video}
+    poster={poster}
+    autoplay
+    muted
+    loop
+    playsinline
+    preload="metadata"
+    aria-hidden="true"
+    tabindex="-1"
+  ></video>
+) : poster ? (
+  <img
+    src={poster}
+    alt={alt}
+    class={cls}
+    loading={eager ? 'eager' : 'lazy'}
+    decoding="async"
+    fetchpriority={fetchpriority}
+    width={width}
+    height={height}
+  />
+) : null}
+
+<script>
+  // Someone who has asked their device for less motion gets the poster frame
+  // and no movement. Checked at load and again if they change the setting
+  // without reloading.
+  const q = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const apply = () => {
+    document.querySelectorAll<HTMLVideoElement>('video[data-hero-video]').forEach((v) => {
+      if (q.matches) { v.pause(); v.removeAttribute('autoplay'); }
+      else { v.play().catch(() => { /* autoplay refused: the poster stands in */ }); }
+    });
+  };
+  apply();
+  q.addEventListener('change', apply);
+</script>
