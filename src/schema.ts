@@ -154,6 +154,31 @@ export interface SiteConfig {
     nationwide?: boolean; // covers all of the UK
     travelRadius?: string; // miles they travel for mobile work, e.g. "10". Only when they actually do mobile.
     googleMapsAreaQuery?: string;
+    /**
+     * A map of where the business is, drawn at BUILD time and served from the
+     * customer's own site as an ordinary picture.
+     *
+     * WHY A PICTURE. This section used to carry a Google Maps iframe. An embed
+     * loads content from Google inside the customer's page, which hands Google
+     * every visitor's IP address and lets it set cookies before the visitor has
+     * clicked anything. UK cookie rules ask for consent BEFORE that happens,
+     * not disclosure afterwards, so keeping the embed means a consent banner on
+     * every site we sell. The privacy page we generate also tells visitors, in
+     * the customer's own name, "this website does not use cookies. There is no
+     * tracking" — which the embed made untrue.
+     *
+     * The embed was removed on 2026-08-06 and replaced with a link, and a link
+     * is not a map: the section's own copy says "you will find us on the map
+     * below". This is the map.
+     *
+     * Built from OpenStreetMap tiles by scripts/make-map.mjs at build time, so
+     * the visitor's browser fetches it from the customer's domain like any
+     * other image. Nobody is reported to anybody and no banner is needed.
+     */
+    mapImage?: {
+      url: string; // e.g. "/map/map.png"
+      alt: string;
+    };
   };
   hours: { day: string; hours: string }[];
   attestations: {
