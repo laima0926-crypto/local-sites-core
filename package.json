@@ -4,7 +4,8 @@
   "description": "Shared Astro components and content schema for createmywebsite.co.uk templates.",
   "type": "module",
   "scripts": {
-    "test": "node --test \"src/**/*.test.mjs\""
+    "test": "node test/json-ld-injection.test.mjs && node --test \"src/**/*.test.mjs\"",
+    "test:json-ld": "node test/json-ld-injection.test.mjs"
   },
   "exports": {
     "./schema": "./src/schema.ts",

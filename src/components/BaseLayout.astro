@@ -33,6 +33,29 @@ const ogImage = rawOgImage
 // site with no theme keeps the template's default palette (no regression).
 const brandVars = Object.entries(site.theme?.brand ?? {}).map(([k, v]) => `--brand-${k}:${v}`).join(';');
 
+// STRUCTURED DATA MUST NOT BE ABLE TO END ITS OWN SCRIPT TAG.
+//
+// This block is written with set:html, which inserts the string raw, and it is
+// built from the customer's own words: business name, tagline, description,
+// address. JSON.stringify escapes JSON syntax. It does NOT escape "</script>",
+// so a business name containing one closed this tag and everything after it
+// became live markup.
+//
+// Proved in a real browser on 2026-08-06 with an order placed through the
+// normal form: the injected script ran, and two script elements it created were
+// sitting in the finished page. A customer's live website could have been
+// defaced or pointed at a phishing page by whoever typed the order.
+//
+// Escaping "<" is enough and is safe: < is a valid JSON string escape, so
+// any parser reads exactly the same data back. "&" and ">" go too, which is the
+// usual belt-and-braces for JSON embedded in HTML.
+function jsonLd(value: unknown): string {
+  return JSON.stringify(value)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026');
+}
+
 // --- Readable text on the customer's own brand colour ------------------------
 //
 // The shared components write white text on brand-500/600/700: every button,
@@ -260,7 +283,7 @@ const localBusiness = {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href={fontsHref} rel="stylesheet" />
 
-    <script type="application/ld+json" set:html={JSON.stringify(localBusiness)} />
+    <script type="application/ld+json" set:html={jsonLd(localBusiness)} />
 
     <!-- Scroll-reveal: opt in only when motion is allowed + supported (set in <head> to avoid flash) -->
     <script is:inline>
