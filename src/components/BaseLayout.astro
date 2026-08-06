@@ -178,7 +178,19 @@ const BRAND_INK_JS = `
   // flattened. If a template ever does put text on a brand gradient, it needs
   // handling here deliberately rather than by a catch-all.
 })();`;
-const fontsHref = site.theme?.fontsHref || 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap';
+// A CLIENT SITE MUST USE THE FONTS OF THE DESIGN IT WAS BUILT ON.
+//
+// The generator does not write theme.fontsHref, so every client site fell back
+// to the generic pair that used to sit here. The design's stylesheet still
+// asked for its real typeface (Archivo on the garage look, Fraunces on the
+// gardener), that typeface was never loaded, and the headings quietly rendered
+// in a system fallback. The customer chose a look and did not get it.
+// Found 2026-08-06 by putting a demo and a real build side by side.
+//
+// Every design now ships /fonts/fonts.css in its own public/ folder, and
+// new-client.sh copies public/ into the client site, so the same path is right
+// in both places. The fallback is local too: nothing here reaches out.
+const fontsHref = site.theme?.fontsHref || '/fonts/fonts.css';
 const skinClass = site.theme?.style ? ` skin-${site.theme.style}` : '';
 
 // The address as a search engine wants it: each part labelled.
@@ -279,8 +291,13 @@ const localBusiness = {
     <meta name="twitter:description" content={pageDescription} />
     {ogImage && <meta name="twitter:image" content={ogImage} />}
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    {/* Fonts are served from this site, not from Google. Every visitor used to
+        have their IP address and browser details sent to fonts.googleapis.com,
+        while the privacy page we generate told them, in the customer's own
+        name, that nothing on the site tracks them. Found 2026-08-06.
+        The preconnects went with it: there is nothing to connect to.
+        ./selfhost-fonts.sh downloads each design's typefaces into its own
+        public/fonts/, and new-client.sh copies that into every client site. */}
     <link href={fontsHref} rel="stylesheet" />
 
     <script type="application/ld+json" set:html={jsonLd(localBusiness)} />
