@@ -21,7 +21,9 @@ if (c.nationwide) {
   intro = 'Not sure if we reach you? Just give us a call.';
 } else if (hasAddress) {
   heading = area ? `Find us in ${area}` : 'Find us';
-  intro = 'Come and visit us. You will find us on the map below.';
+  // Only promise a map when there is going to be one. This line read "you will
+  // find us on the map below" for months after the map itself was removed.
+  intro = c.mapImage ? 'Come and visit us. You will find us on the map below.' : 'Come and visit us.';
 } else {
   // No premises attested and no radius given: state coverage, invent nothing.
   heading = area ? `Covering ${area}` : 'Our service area';
@@ -50,6 +52,26 @@ if (c.nationwide) {
       </ul>
     )}
 
+    {/* THE MAP ITSELF, as a picture built when the site was built.
+        See the note on `contact.mapImage` in the schema for why it is not an
+        embed. Short version: an embed reports every visitor to Google before
+        they have clicked anything, which needs a consent banner and made the
+        privacy page we generate untrue. This is fetched from the customer's own
+        domain like any other image. */}
+    {c.mapImage && (
+      <div class="mt-10 max-w-4xl mx-auto">
+        <img
+          src={c.mapImage.url}
+          alt={c.mapImage.alt}
+          width="768"
+          height="512"
+          loading="lazy"
+          decoding="async"
+          class="w-full h-auto rounded-2xl shadow-md"
+        />
+      </div>
+    )}
+
     {/* A LINK, NOT AN EMBEDDED MAP.
         This was a Google Maps iframe. An embed sets cookies and reports every
         visitor to Google, and the privacy page we generate for each customer
@@ -60,7 +82,7 @@ if (c.nationwide) {
         key, loads nothing, and leaves the customer's privacy page true as
         written. */}
     {c.googleMapsAreaQuery && (
-      <div class="mt-10 flex justify-center">
+      <div class="mt-6 flex justify-center">
         <a
           href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(c.googleMapsAreaQuery)}`}
           target="_blank"
