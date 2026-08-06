@@ -35,8 +35,12 @@ interface Props {
   /** Passed through where a hero sets explicit dimensions to reserve space. */
   width?: number;
   height?: number;
+  /** The hero image is usually the largest thing above the fold, so it is
+      fetched at high priority by default. Ignored for video, which already
+      loads its poster first and its data lazily. */
+  fetchpriority?: 'high' | 'low' | 'auto';
 }
-const { video, poster, alt, class: cls = '', eager = true, width, height } = Astro.props;
+const { video, poster, alt, class: cls = '', eager = true, width, height, fetchpriority = 'high' } = Astro.props;
 ---
 
 {video ? (
@@ -60,6 +64,7 @@ const { video, poster, alt, class: cls = '', eager = true, width, height } = Ast
     class={cls}
     loading={eager ? 'eager' : 'lazy'}
     decoding="async"
+    fetchpriority={fetchpriority}
     width={width}
     height={height}
   />
