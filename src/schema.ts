@@ -171,6 +171,29 @@ export interface SiteConfig {
   };
   whyChooseUs: string[];
   services: Service[];
+  /**
+   * The customer's own price list, as a file they uploaded, shown directly on
+   * the services section.
+   *
+   * WHY THIS EXISTS. The intake form tells them "no need to type it all out
+   * here, upload your existing price list and we'll copy your services and
+   * prices from it". Transcribing it into `services` is the better answer and
+   * still the goal: it is readable, searchable and editable. But until somebody
+   * has done that by hand, the site showed NOTHING about prices at all, while
+   * the customer had already sent them. A page with no prices is worse than a
+   * page with a photograph of the real ones. Found on GYM00001-L, 2026-08-06.
+   *
+   * `services` takes precedence: once the prices are transcribed, the file
+   * stops showing. So this is a floor, not a destination.
+   *
+   * Word and Excel files are deliberately not renderable here — a browser
+   * cannot display them. Those still have to be transcribed.
+   */
+  priceListFile?: {
+    url: string; // e.g. "/price-list/price-list.png"
+    type: 'image' | 'pdf';
+    label?: string; // optional caption / button label
+  };
   gallery: GalleryImage[];
   beforeAfter: BeforeAfter[];
   testimonials: Testimonial[];
