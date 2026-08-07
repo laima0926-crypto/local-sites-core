@@ -130,13 +130,18 @@ const hasGallery = site.gallery.length > 0;
 </section>
 
 <!-- Lightbox -->
-<div id="lightbox" class="hidden fixed inset-0 z-50 bg-ink-900/90 backdrop-blur items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Image preview">
-  <button id="lightbox-close" type="button" class="absolute top-4 right-4 text-white w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 inline-flex items-center justify-center" aria-label="Close">
+{/* Literal colours throughout, not ink/white utilities: dark skins invert the
+    ink scale AND remap text-white/bg-white, which turned this backdrop
+    near-white (and would turn the controls near-black on a black backdrop).
+    The lightbox is chrome, so it stays dark-with-light-controls whatever the
+    palette. KB bug kb-ac702c10. */}
+<div id="lightbox" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Image preview">
+  <button id="lightbox-close" type="button" class="absolute top-4 right-4 text-[#f5f7fa] w-12 h-12 rounded-full bg-[#ffffff1a] hover:bg-[#ffffff33] inline-flex items-center justify-center" aria-label="Close">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
   </button>
   <figure class="max-w-5xl w-full">
     <img id="lightbox-img" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-lg" />
-    <figcaption id="lightbox-caption" class="mt-3 text-center text-sm text-white/90"></figcaption>
+    <figcaption id="lightbox-caption" class="mt-3 text-center text-sm text-[#f5f7fa]/90"></figcaption>
   </figure>
 </div>
 </Fragment>
